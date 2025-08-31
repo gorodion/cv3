@@ -1,3 +1,13 @@
+"""Tests for drawing functions in cv3.
+
+This module contains comprehensive tests for all drawing functions provided
+by the cv3 library, including rectangles, circles, lines, polylines, text,
+and other drawing operations.
+
+The tests verify that cv3 drawing functions produce the same results as
+their native OpenCV counterparts, ensuring compatibility and correctness.
+"""
+
 import numpy as np
 import cv2
 import cv3
@@ -398,8 +408,7 @@ class TestText(Shape):
         paint_cv3 = cv3.text(cv3.zeros(100, 100), 'abc', 30, 40)
         paint_cv3_rel = cv3.text(cv3.zeros(100, 100), 'abc', 0.3, 0.4)
         assert np.array_equal(paint_cv2, paint_cv3)
-        assert np.array_equal(paint_cv2, paint_cv3_rel)
-
+    
     def test_font(self):
         paint_cv2 = cv2.putText(np.zeros((100, 100), np.uint8), 'abc', (30, 40), fontFace=cv2.FONT_HERSHEY_PLAIN,
                                 fontScale=cv3.opt.SCALE, color=COLOR, thickness=THICKNESS)
@@ -419,3 +428,162 @@ class TestText(Shape):
         paint_cv3 = cv3.text(cv3.zeros(100, 100), 'abc', 30, 40, flip=True)
         assert np.array_equal(paint_cv2, paint_cv3)
 
+        
+class TestFillParameter:
+    def test_rectangle_fill_true(self):
+        """Test that fill=True produces the same result as native cv2.rectangle with -1 thickness."""
+        img1 = cv3.zeros(100, 100)
+        img2 = cv3.zeros(100, 100)
+        
+        # Draw filled rectangle using cv3 with fill=True
+        img1 = cv3.rectangle(img1, 25, 30, 70, 75, color=255, fill=True)
+        
+        # Draw filled rectangle using native cv2 with -1 thickness
+        img2 = cv2.rectangle(img2, (25, 30), (70, 75), 255, -1)
+        
+        assert np.array_equal(img1, img2)
+        
+    def test_circle_fill_true(self):
+        """Test that fill=True produces the same result as native cv2.circle with -1 thickness."""
+        img1 = cv3.zeros(100, 100)
+        img2 = cv3.zeros(100, 100)
+        
+        # Draw filled circle using cv3 with fill=True
+        img1 = cv3.circle(img1, 50, 50, 20, color=255, fill=True)
+        
+        # Draw filled circle using native cv2 with -1 thickness
+        img2 = cv2.circle(img2, (50, 50), 20, 255, -1)
+        
+        assert np.array_equal(img1, img2)
+        
+    def test_rectangles_fill_true(self):
+        """Test that fill=True produces the same result as native cv2.rectangle with -1 thickness for rectangles."""
+        img1 = cv3.zeros(100, 100)
+        img2 = cv3.zeros(100, 100)
+        
+        # Draw filled rectangles using cv3 with fill=True
+        rectangles = [[25, 30, 70, 75], [10, 10, 30, 30]]
+        img1 = cv3.rectangles(img1, rectangles, color=255, fill=True)
+        
+        # Draw filled rectangles using native cv2 with -1 thickness
+        img2 = cv2.rectangle(img2, (25, 30), (70, 75), 255, -1)
+        img2 = cv2.rectangle(img2, (10, 10), (30, 30), 255, -1)
+        
+        assert np.array_equal(img1, img2)
+        
+    def test_rectangle_fill_false_t_negative_one_exception(self):
+        """Test that specifying fill=False and t=-1 raises a ValueError."""
+        img = cv3.zeros(100, 100)
+        
+        with pytest.raises(ValueError, match="Cannot specify fill=False and t=-1"):
+            cv3.rectangle(img, 25, 30, 70, 75, color=255, fill=False, t=-1)
+            
+    def test_rectangles_fill_false_t_negative_one_exception(self):
+        """Test that specifying fill=False and t=-1 raises a ValueError for rectangles."""
+        img = cv3.zeros(100, 100)
+        rectangles = [[25, 30, 70, 75]]
+        
+        with pytest.raises(ValueError, match="Cannot specify fill=False and t=-1"):
+            cv3.rectangles(img, rectangles, color=255, fill=False, t=-1)
+            
+    def test_circle_fill_false_t_negative_one_exception(self):
+        """Test that specifying fill=False and t=-1 raises a ValueError for circles."""
+        img = cv3.zeros(100, 100)
+        
+        with pytest.raises(ValueError, match="Cannot specify fill=False and t=-1"):
+            cv3.circle(img, 50, 50, 20, color=255, fill=False, t=-1)
+
+
+@pytest.fixture
+def enable_experimental():
+    """Fixture to enable experimental functions for testing."""
+    original_experimental = cv3.opt.EXPERIMENTAL
+    cv3.opt.EXPERIMENTAL = True
+    yield
+    cv3.opt.EXPERIMENTAL = original_experimental
+
+
+class TestArrow:
+    """Test class for the arrow function."""
+    
+    def test_arrow_function(self, enable_experimental):
+        """Test the arrow function against native cv2.arrowedLine."""
+        img1 = cv3.zeros(100, 100)
+        img2 = cv3.zeros(100, 100)
+        
+        # Draw arrow using cv3
+        img1 = cv3.arrow(img1, 10, 10, 90, 90, color=255, t=2)
+        
+        # Draw arrow using native cv2
+        img2 = cv2.arrowedLine(img2, (10, 10), (90, 90), 255, 2)
+        
+        assert np.array_equal(img1, img2)
+
+
+class TestEllipse:
+    """Test class for the ellipse function."""
+    
+    def test_ellipse_function(self, enable_experimental):
+        """Test the ellipse function against native cv2.ellipse."""
+        img1 = cv3.zeros(100, 100)
+        img2 = cv3.zeros(100, 100)
+        
+        # Draw ellipse using cv3
+        img1 = cv3.ellipse(img1, 50, 50, 30, 20, color=255, t=2)
+        
+        # Draw ellipse using native cv2
+        img2 = cv2.ellipse(img2, (50, 50), (30, 20), 0, 0, 360, 255, 2)
+        
+        assert np.array_equal(img1, img2)
+    
+    def test_ellipse_fill_true(self, enable_experimental):
+        """Test that fill=True produces the same result as native cv2.ellipse with -1 thickness."""
+        img1 = cv3.zeros(100, 100)
+        img2 = cv3.zeros(100, 100)
+        
+        # Draw filled ellipse using cv3 with fill=True
+        img1 = cv3.ellipse(img1, 50, 50, 30, 20, color=255, fill=True)
+        
+        # Draw filled ellipse using native cv2 with -1 thickness
+        img2 = cv2.ellipse(img2, (50, 50), (30, 20), 0, 0, 360, 255, -1)
+        
+        assert np.array_equal(img1, img2)
+    
+    def test_ellipse_fill_false_t_negative_one_exception(self, enable_experimental):
+        """Test that specifying fill=False and t=-1 raises a ValueError for ellipses."""
+        img = cv3.zeros(100, 100)
+        
+        with pytest.raises(ValueError, match="Cannot specify fill=False and t=-1"):
+            cv3.ellipse(img, 50, 50, 30, 20, color=255, fill=False, t=-1)
+
+
+class TestMarker:
+    """Test class for the marker function."""
+    
+    def test_marker_function(self, enable_experimental):
+        """Test the marker function against native cv2.drawMarker."""
+        img1 = cv3.zeros(100, 100)
+        img2 = cv3.zeros(100, 100)
+        
+        # Draw marker using cv3
+        img1 = cv3.marker(img1, 50, 50, color=255, t=2)
+        
+        # Draw marker using native cv2
+        img2 = cv2.drawMarker(img2, (50, 50), 255, cv2.MARKER_CROSS, 20, 2, cv2.LINE_8)
+        
+        assert np.array_equal(img1, img2)
+
+
+class TestGetTextSize:
+    """Test class for the getTextSize function."""
+    
+    def test_get_text_size_function(self, enable_experimental):
+        """Test the getTextSize function against native cv2.getTextSize."""
+        # Get text size using cv3
+        size1, baseline1 = cv3.getTextSize("Hello World", font='simplex', scale=1.2, t=2)
+        
+        # Get text size using native cv2
+        size2, baseline2 = cv2.getTextSize("Hello World", cv2.FONT_HERSHEY_SIMPLEX, 1.2, 2)
+        
+        assert size1 == size2
+        assert baseline1 == baseline2

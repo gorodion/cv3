@@ -1,3 +1,13 @@
+"""Tests for window functions in cv3.
+
+This module contains tests for window display functions provided by the cv3 library,
+including imshow, Window class, and wait_key operations.
+
+The tests verify that cv3 window functions work correctly with different image formats
+and window management features. These tests are primarily for interactive testing
+as they involve displaying images in windows.
+"""
+
 import cv2
 import cv3
 from PIL import Image

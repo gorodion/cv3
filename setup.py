@@ -1,10 +1,10 @@
 from setuptools import setup
 
 setup(
-    name='pycv',
-    version='1.2.1',
+    name='cv3',
+    version='1.3.0',
     packages=['cv3'],
-    url='https://github.com/gorodion/pycv',
+    url='https://github.com/gorodion/cv3',
     license='Apache 2.0',
     author='gorodion',
     author_email='domonion@list.ru',

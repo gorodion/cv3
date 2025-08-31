@@ -1,3 +1,15 @@
+"""Tests for transformation functions in cv3.
+
+This module contains comprehensive tests for image transformation functions
+provided by the cv3 library, including rotation, scaling, shifting, resizing,
+cropping, and padding operations.
+
+The tests verify that cv3 transformation functions produce the same results as
+their native OpenCV counterparts, ensuring compatibility and correctness.
+Tests cover various scenarios including different interpolation methods,
+border handling, and edge cases.
+"""
+
 import numpy as np
 import cv2
 import cv3
@@ -70,22 +82,22 @@ class BaseTestBorder(BaseTestTransform):
         )
 
 class TestTransform(BaseTestInter, BaseTestBorder):
-    cv3_foo = partial(cv3.transform, img, angle=25.3, scale=0.6)
-    cv2_foo = partial(cv2.warpAffine, img, cv2.getRotationMatrix2D((img.shape[1] / 2, img.shape[0] / 2), 25.3, 0.6), img.shape[1::-1])
+    cv3_foo = staticmethod(partial(cv3.transform, img, angle=25.3, scale=0.6))
+    cv2_foo = staticmethod(partial(cv2.warpAffine, img, cv2.getRotationMatrix2D((img.shape[1] / 2, img.shape[0] / 2), 25.3, 0.6), img.shape[1::-1]))
 
 class TestRotate(BaseTestInter, BaseTestBorder):
-    cv3_foo = partial(cv3.rotate, img, 25.3)
-    cv2_foo = partial(cv2.warpAffine, img, cv2.getRotationMatrix2D((img.shape[1] / 2, img.shape[0] / 2), 25.3, 1), img.shape[1::-1])
+    cv3_foo = staticmethod(partial(cv3.rotate, img, 25.3))
+    cv2_foo = staticmethod(partial(cv2.warpAffine, img, cv2.getRotationMatrix2D((img.shape[1] / 2, img.shape[0] / 2), 25.3, 1), img.shape[1::-1]))
 
 class TestScale(BaseTestInter, BaseTestBorder):
-    cv3_foo = partial(cv3.scale, img, 0.6)
-    cv2_foo = partial(cv2.warpAffine, img, cv2.getRotationMatrix2D((img.shape[1] / 2, img.shape[0] / 2), 0, 0.6), img.shape[1::-1])
+    cv3_foo = staticmethod(partial(cv3.scale, img, 0.6))
+    cv2_foo = staticmethod(partial(cv2.warpAffine, img, cv2.getRotationMatrix2D((img.shape[1] / 2, img.shape[0] / 2), 0, 0.6), img.shape[1::-1]))
 
 class TestShift(BaseTestBorder):
     x = 30
     y = -50
-    cv3_foo = partial(cv3.shift, img, x, y)
-    cv2_foo = partial(cv2.warpAffine, img, np.float32([[1, 0, x], [0, 1, y]]), img.shape[1::-1])
+    cv3_foo = staticmethod(partial(cv3.shift, img, x, y))
+    cv2_foo = staticmethod(partial(cv2.warpAffine, img, np.float32([[1, 0, x], [0, 1, y]]), img.shape[1::-1]))
 
     def test_rel(self):
         h, w = img.shape[:2]
@@ -96,19 +108,19 @@ class TestShift(BaseTestBorder):
 
 class TestXShift(TestShift):
     y = 0
-    cv3_foo = partial(cv3.xshift, img, TestShift.x)
-    cv2_foo = partial(cv2.warpAffine, img, np.float32([[1, 0, TestShift.x], [0, 1, y]]), img.shape[1::-1])
+    cv3_foo = staticmethod(partial(cv3.xshift, img, TestShift.x))
+    cv2_foo = staticmethod(partial(cv2.warpAffine, img, np.float32([[1, 0, TestShift.x], [0, 1, y]]), img.shape[1::-1]))
 
 class TestYShift(TestShift):
     x = 0
-    cv3_foo = partial(cv3.yshift, img, TestShift.y)
-    cv2_foo = partial(cv2.warpAffine, img, np.float32([[1, 0, x], [0, 1, TestShift.y]]), img.shape[1::-1])
+    cv3_foo = staticmethod(partial(cv3.yshift, img, TestShift.y))
+    cv2_foo = staticmethod(partial(cv2.warpAffine, img, np.float32([[1, 0, x], [0, 1, TestShift.y]]), img.shape[1::-1]))
 
 
 class TestResize(BaseTestInter):
     inter_key = 'interpolation'
-    cv3_foo = partial(cv3.resize, img, 100.3, 200)
-    cv2_foo = partial(cv2.resize, img, (100, 200))
+    cv3_foo = staticmethod(partial(cv3.resize, img, 100.3, 200))
+    cv2_foo = staticmethod(partial(cv2.resize, img, (100, 200)))
 
     def test_rel(self):
         h, w = img.shape[:2]
@@ -141,7 +153,7 @@ class TestCrop:
             [(-w-10, 10), (w-20, h-20)],
             [(10, -h-10), (w-20, h-20)],
             [(10, 10), (w+10, h-20)],
-            [(10, 10), (w-20, h+10)]
+            [(10, 10), (w+10, h+10)]
         ]:
             crop_cv2 = img[max(pt1[1],0):pt2[1], max(pt1[0],0):pt2[0]]
             crop_cv3 = cv3.crop(img, *pt1, *pt2)
@@ -183,8 +195,8 @@ class TestCrop:
 class TestPad(BaseTestBorder):
     border_mode_key = 'borderType'
     border_value_key = 'value'
-    cv3_foo = partial(cv3.pad, img, 10, 20., 30.1, 40)
-    cv2_foo = partial(cv2.copyMakeBorder, img, 10, 20, 30, 40, borderType=cv2.BORDER_CONSTANT, value=None)
+    cv3_foo = staticmethod(partial(cv3.pad, img, 10, 20., 30.1, 40))
+    cv2_foo = staticmethod(partial(cv2.copyMakeBorder, img, 10, 20, 30, 40, borderType=cv2.BORDER_CONSTANT, value=None))
 
     def test_rel(self):
         h, w = img.shape[:2]
