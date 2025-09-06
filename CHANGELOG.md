@@ -12,6 +12,7 @@
 * got rid of f-strings for compatibility with early python versions
 * got rid of TODOs
 * small docs corrections
+* replaced Path(...).unlink(missing_ok=True) with if Path(...).exists(): Path(...).unlink() for compatibility
 
 ### Deprecated
 

@@ -164,11 +164,11 @@ def test_video_extra_kw():
 
 @pytest.fixture()
 def out_path_fixture():
-    Path(OUT_PATH_VID).unlink(missing_ok=True)
-    Path(OUT_PATH_VID_AVI).unlink(missing_ok=True)
+    if Path(OUT_PATH_VID).exists(): Path(OUT_PATH_VID).unlink()
+    if Path(OUT_PATH_VID_AVI).exists(): Path(OUT_PATH_VID_AVI).unlink()
     yield
-    Path(OUT_PATH_VID).unlink(missing_ok=True)
-    Path(OUT_PATH_VID_AVI).unlink(missing_ok=True)
+    if Path(OUT_PATH_VID).exists(): Path(OUT_PATH_VID).unlink()
+    if Path(OUT_PATH_VID_AVI).exists(): Path(OUT_PATH_VID_AVI).unlink()
 
 
 class TestWriterOpenWrite:
