@@ -12,5 +12,9 @@ setup(
     install_requires=[
         'numpy>=1.19.5',
         'opencv-python>=4.2.0.34'
-    ]
+    ],
+    project_urls={
+        "Documentation": "https://cv3.readthedocs.io/en/latest/",
+        "Source": "https://github.com/gorodion/cv3",
+    },
 )

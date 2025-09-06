@@ -561,7 +561,7 @@ putText = text
 def arrow(img, x0, y0, x1, y1, rel=None, color=None, t=None, line_type=None, tip_length=None, copy=False):
     """Draw an arrowed line on an image.
     
-    This is an experimental function. To use it, set opt.EXPERIMENTAL = True.
+    This is an experimental function. To use it, set experimental mode with cv3.opt.set_exp().
 
     Args:
         img (numpy.ndarray): Input image to draw on.
@@ -593,7 +593,7 @@ def arrow(img, x0, y0, x1, y1, rel=None, color=None, t=None, line_type=None, tip
         >>> img = cv3.arrow(img, 20, 20, 80, 80, color='blue', tip_length=0.2)
     """
     if not opt.EXPERIMENTAL:
-        raise RuntimeError("This function is experimental. Set opt.EXPERIMENTAL = True to use it.")
+        raise RuntimeError("This function is experimental. Use opt.set_exp() to enable it.")
     
     kwargs = {}
     if t is not None:
@@ -609,7 +609,7 @@ def ellipse(img, x, y, axes_x, axes_y, angle=0, start_angle=0, end_angle=360, re
             line_type=None, fill=None, copy=False):
     """Draw an ellipse on an image.
     
-    This is an experimental function. To use it, set opt.EXPERIMENTAL = True.
+    This is an experimental function. To use it, set experimental mode with cv3.opt.set_exp().
 
     Args:
         img (numpy.ndarray): Input image to draw on.
@@ -655,7 +655,7 @@ def ellipse(img, x, y, axes_x, axes_y, angle=0, start_angle=0, end_angle=360, re
         >>> img = cv3.ellipse(img, 20, 20, 10, 5, color='green', t=-1)
     """
     if not opt.EXPERIMENTAL:
-        raise RuntimeError("This function is experimental. Set opt.EXPERIMENTAL = True to use it.")
+        raise RuntimeError("This function is experimental. Use opt.set_exp() to enable it.")
     
     kwargs = {}
     if t is not None:
@@ -671,7 +671,7 @@ def ellipse(img, x, y, axes_x, axes_y, angle=0, start_angle=0, end_angle=360, re
 def marker(img, x, y, marker_type=None, marker_size=None, rel=None, color=None, t=None, line_type=None, copy=False):
     """Draw a marker on an image.
     
-    This is an experimental function. To use it, set opt.EXPERIMENTAL = True.
+    This is an experimental function. To use it, set experimental mode with cv3.opt.set_exp().
 
     Args:
         img (numpy.ndarray): Input image to draw on.
@@ -703,7 +703,7 @@ def marker(img, x, y, marker_type=None, marker_size=None, rel=None, color=None, 
         >>> img = cv3.marker(img, 80, 80, marker_type='star', marker_size=30, color='blue')
     """
     if not opt.EXPERIMENTAL:
-        raise RuntimeError("This function is experimental. Set opt.EXPERIMENTAL = True to use it.")
+        raise RuntimeError("This function is experimental. Use opt.set_exp() to enable it.")
     
     kwargs = {}
     if t is not None:
@@ -716,7 +716,7 @@ def marker(img, x, y, marker_type=None, marker_size=None, rel=None, color=None, 
 def getTextSize(text, font=None, scale=None, t=None):
     """Calculate the width and height of a text string.
     
-    This is an experimental function. To use it, set opt.EXPERIMENTAL = True.
+    This is an experimental function. To use it, set experimental mode with cv3.opt.set_exp().
 
     Args:
         text (str): Input text string.
@@ -740,6 +740,6 @@ def getTextSize(text, font=None, scale=None, t=None):
         >>> print(f"Text size: {text_size}, Baseline: {baseline}")
     """
     if not opt.EXPERIMENTAL:
-        raise RuntimeError("This function is experimental. Set opt.EXPERIMENTAL = True to use it.")
+        raise RuntimeError("This function is experimental. Use opt.set_exp() to enable it.")
     
     return _get_text_size(text, font=font, scale=scale, t=t)

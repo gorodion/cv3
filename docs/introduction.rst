@@ -35,6 +35,16 @@ Key Benefits
 Installation
 ------------
 
+You can install cv3 using either of the following methods:
+
+1. From PyPI (recommended):
+
+.. code-block:: bash
+
+   pip install cv3
+
+2. From GitHub (latest development version):
+
 .. code-block:: bash
 
    pip install git+https://github.com/gorodion/cv3.git

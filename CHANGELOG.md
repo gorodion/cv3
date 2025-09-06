@@ -16,6 +16,8 @@
 * New transform module with internal functions in _transform.py
 * Module-level documentation for all cv3 modules
 * Read the Docs configuration files (readthedocs.yaml and docs/requirements.txt)
+* Core concepts documentation page with detailed package features
+* Project URLs in setup.py for documentation and source code
 
 ### Changed
 * Improved documentation for all existing functions
@@ -23,6 +25,8 @@
 * Moved internal transform functions to private module
 * Enhanced docstrings with detailed parameter descriptions
 * Updated project version to 1.3.0
+* Updated installation instructions in documentation and README
+* Updated README.md to match documentation content
 
 ### Deprecated
 
@@ -31,6 +35,7 @@
 ### Fixed
 * Documentation inconsistencies
 * Module organization issues
+* Error messages in draw.py experimental functions to use opt.set_exp() instead of "Set opt.EXPERIMENTAL = True"
 
 ## [1.2.1] - 2023-06-25
 

@@ -54,8 +54,8 @@ Creating annotations and visualizations:
        window.imshow(canvas)
        window.wait_key(0)
 
-Video Processing
-----------------
+Video Processing and Display
+----------------------------
 
 Processing video frames:
 
@@ -64,7 +64,11 @@ Processing video frames:
    import cv3
    
    # Process video frames
-   with cv3.Video('input.mp4') as cap, cv3.Video('output.mp4', 'w') as out:
+   with (
+       cv3.Video('input.mp4') as cap,
+       cv3.Video('output.mp4', 'w') as out,
+       cv3.Windows(['Original', 'Processed']) as windows
+   ):
        for frame in cap:
            # Convert to grayscale
            gray = cv3.rgb2gray(frame)
@@ -76,12 +80,11 @@ Processing video frames:
            out.write(thresh)
            
            # Display original and processed frames
-           with cv3.Windows(['Original', 'Processed']) as windows:
-               windows['Original'].imshow(frame)
-               windows['Processed'].imshow(thresh)
+           windows['Original'].imshow(frame)
+           windows['Processed'].imshow(thresh)
                
-               if cv3.wait_key(1) == ord('q'):
-                   break
+           if cv3.wait_key(1) == ord('q'):
+               break
 
 Advanced Drawing with Coordinates
 ---------------------------------
@@ -98,8 +101,8 @@ Using different coordinate modes and relative coordinates:
    # Standard mode (x0, y0, x1, y1)
    cv3.rectangle(img, 10, 10, 100, 100, color='red', t=2)
    
-   # Width/height mode (x, y, width, height)
-   cv3.rectangle(img, 120, 10, 100, 100, mode='xywh', color='blue', t=2)
+   # Width/height mode (x, y, width, height) with fill parameter
+   cv3.rectangle(img, 120, 10, 100, 100, mode='xywh', color='blue', t=2, fill=True)
    
    # Center/width/height mode (center_x, center_y, width, height)
    cv3.rectangle(img, 250, 50, 100, 100, mode='ccwh', color='green', t=2)
@@ -166,7 +169,7 @@ Working with different color spaces:
    # Display results
    with cv3.Windows(['Original', 'Grayscale', 'HSV', 'HSV->RGB']) as windows:
        windows['Original'].imshow(img)
-       windows['Grayscale'].imshow(gray, cmap='gray')
+       windows['Grayscale'].imshow(gray)
        windows['HSV'].imshow(hsv)
        windows['HSV->RGB'].imshow(rgb_from_hsv)
        cv3.wait_key(0)
@@ -236,9 +239,12 @@ Customizing default behavior:
    # Create video with custom defaults
    with cv3.Video('custom_video.mp4', 'w') as out:
        frame = cv3.zeros(480, 640, 3)
+       
        cv3.rectangle(frame, 100, 100, 500, 400, color='blue', t=5)
        cv3.text(frame, 'Custom Video', 200, 300, color='white')
-       out.write(frame)
+       
+       for i in range(100):
+           out.write(frame)
    
    # Display result
    with cv3.Window('Custom Configuration') as window:

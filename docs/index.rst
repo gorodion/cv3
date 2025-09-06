@@ -14,7 +14,7 @@ more intuitive interfaces and eliminating common boilerplate code.
    :caption: Contents:
 
    introduction
-   features
+   core_concepts
    examples
    modules
 

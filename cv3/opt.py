@@ -101,3 +101,7 @@ def draw(thickness=None, color=None, font=None, pt_radius=None, scale=None, line
     if line_type is not None:
         # TODO asserts flags
         LINE_TYPE = line_type
+
+def set_exp(exp=True):
+    global EXPERIMENTAL
+    EXPERIMENTAL = exp

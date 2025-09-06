@@ -208,6 +208,7 @@ class VideoCapture(VideoInterface):
         return frame
 
     imread = read
+    seek = rewind
     """Alias for read method."""
 
 
