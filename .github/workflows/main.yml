@@ -37,4 +37,5 @@ jobs:
         pytest tests/test_io.py && \
         pytest tests/test_other.py && \
         pytest tests/test_transform.py && \
-        pytest tests/test_video.py
+        pytest tests/test_video.py  && \
+        pytest tests/test_processing.py

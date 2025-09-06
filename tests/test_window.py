@@ -66,19 +66,17 @@ def test_imshow_pil():
 
 
 def test_imshow_window_pos():
-    with (
-        cv3.Window('pos 0,0', pos=(0,0)) as w1,
-        cv3.Window('pos 960,540', pos=(480,270)) as w2,
-        cv3.Window('pos 0,700', pos=(0,540)) as w3,
-    ):
-        for w in w1, w2, w3:
-            w.imshow(test_img)
-        cv3.wait_key(2000)
+    with cv3.Window('pos 0,0', pos=(0,0)) as w1:
+        with cv3.Window('pos 960,540', pos=(480,270)) as w2:
+            with cv3.Window('pos 0,700', pos=(0,540)) as w3:
+                for w in (w1, w2, w3):
+                    w.imshow(test_img)
+                cv3.wait_key(2000)
 
 
 def test_window_move():
     secs = 2
-    with cv3.Window(f'Move in {secs} secs', pos=(0,0)) as w:
+    with cv3.Window('Move in {} secs'.format(secs), pos=(0,0)) as w:
         w.imshow(test_img)
         w.wait_key(secs * 1000)
         w.move(100, 100)

@@ -148,7 +148,7 @@ def imread(img_path, flag=cv2.IMREAD_COLOR):
         if not is_ascii(img_path):
             img = cv2.imdecode(np.fromfile(img_path, dtype=np.uint8), flag)
         if img is None:
-            raise OSError(f'File was not read: {img_path}')
+            raise OSError('File was not read: {}'.format(img_path))
     if img.ndim == 2:
         return img
     if opt.RGB:
@@ -297,7 +297,7 @@ class Window:
             >>> window = cv3.Window('My Window', pos=(100, 100))
         """
         if window_name is None:
-            window_name = f'window{Window.__window_count}'
+            window_name = 'window{}'.format(Window.__window_count)
 
         window_name = str(window_name)
         cv2.namedWindow(window_name, flag)

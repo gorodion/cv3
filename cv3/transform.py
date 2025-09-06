@@ -103,7 +103,7 @@ def transform(img, angle, scale, inter=cv2.INTER_LINEAR, border=cv2.BORDER_CONST
             'area', 'cubic', 'lanczos4' or OpenCV flags. Defaults to cv2.INTER_LINEAR.
         border (int or str, optional): Border type. Can be one of: 'constant', 'replicate', 
             'reflect', 'wrap', 'default' or OpenCV flags. Defaults to cv2.BORDER_CONSTANT.
-        value: Border value for constant border type. Defaults to None.
+        value: Border color value for constant border type. Defaults to None.
         
     Returns:
         numpy.ndarray: Transformed image.
@@ -116,6 +116,8 @@ def transform(img, angle, scale, inter=cv2.INTER_LINEAR, border=cv2.BORDER_CONST
         >>> img[25:75, 25:75] = [255, 255, 255]  # White square
         >>> # Rotate 45 degrees and scale by 1.5
         >>> transformed = cv3.transform(img, 45, 1.5)
+        >>> # Rotate with custom border color
+        >>> transformed = cv3.transform(img, 45, 1.5, value='red')
     """
     return _transform(img, angle, scale, inter=inter, border=border, value=value)
 
@@ -130,7 +132,7 @@ def rotate(img, angle, inter=cv2.INTER_LINEAR, border=cv2.BORDER_CONSTANT, value
             'area', 'cubic', 'lanczos4' or OpenCV flags. Defaults to cv2.INTER_LINEAR.
         border (int or str, optional): Border type. Can be one of: 'constant', 'replicate', 
             'reflect', 'wrap', 'default' or OpenCV flags. Defaults to cv2.BORDER_CONSTANT.
-        value: Border value for constant border type. Defaults to None.
+        value: Border color value for constant border type. Defaults to None.
         
     Returns:
         numpy.ndarray: Rotated image.
@@ -143,6 +145,8 @@ def rotate(img, angle, inter=cv2.INTER_LINEAR, border=cv2.BORDER_CONSTANT, value
         >>> img[25:75, 25:75] = [255, 255, 255]  # White square
         >>> # Rotate 45 degrees
         >>> rotated = cv3.rotate(img, 45)
+        >>> # Rotate with custom border color
+        >>> rotated = cv3.rotate(img, 45, value=[0, 128, 128])
     """
     return _rotate(img, angle, inter=inter, border=border, value=value)
 
@@ -157,7 +161,7 @@ def scale(img, factor, inter=cv2.INTER_LINEAR, border=cv2.BORDER_CONSTANT, value
             'area', 'cubic', 'lanczos4' or OpenCV flags. Defaults to cv2.INTER_LINEAR.
         border (int or str, optional): Border type. Can be one of: 'constant', 'replicate', 
             'reflect', 'wrap', 'default' or OpenCV flags. Defaults to cv2.BORDER_CONSTANT.
-        value: Border value for constant border type. Defaults to None.
+        value: Border color value for constant border type. Defaults to None.
         
     Returns:
         numpy.ndarray: Scaled image.
@@ -170,6 +174,8 @@ def scale(img, factor, inter=cv2.INTER_LINEAR, border=cv2.BORDER_CONSTANT, value
         >>> img[25:75, 25:75] = [255, 255, 255]  # White square
         >>> # Scale by 1.5
         >>> scaled = cv3.scale(img, 1.5)
+        >>> # Scale with custom border color
+        >>> scaled = cv3.scale(img, 0.5, value='green')
     """
     return _scale(img, factor, inter=inter, border=border, value=value)
 
@@ -183,7 +189,7 @@ def shift(img, x, y, border=cv2.BORDER_CONSTANT, value=None, rel=None):
         y (int or float): Shift in y direction.
         border (int or str, optional): Border type. Can be one of: 'constant', 'replicate', 
             'reflect', 'wrap', 'default' or OpenCV flags. Defaults to cv2.BORDER_CONSTANT.
-        value: Border value for constant border type. Defaults to None.
+        value: Border color value for constant border type. Defaults to None.
         rel (bool, optional): Whether to interpret x and y as relative values. Defaults to None.
         
     Returns:
@@ -209,7 +215,7 @@ def xshift(img, x, border=cv2.BORDER_CONSTANT, value=None, rel=None):
         x (int or float): Shift in x direction.
         border (int or str, optional): Border type. Can be one of: 'constant', 'replicate', 
             'reflect', 'wrap', 'default' or OpenCV flags. Defaults to cv2.BORDER_CONSTANT.
-        value: Border value for constant border type. Defaults to None.
+        value: Border color value for constant border type. Defaults to None.
         rel (bool, optional): Whether to interpret x as relative value. Defaults to None.
         
     Returns:
@@ -235,7 +241,7 @@ def yshift(img, y, border=cv2.BORDER_CONSTANT, value=None, rel=None):
         y (int or float): Shift in y direction.
         border (int or str, optional): Border type. Can be one of: 'constant', 'replicate', 
             'reflect', 'wrap', 'default' or OpenCV flags. Defaults to cv2.BORDER_CONSTANT.
-        value: Border value for constant border type. Defaults to None.
+        value: Border color value for constant border type. Defaults to None.
         rel (bool, optional): Whether to interpret y as relative value. Defaults to None.
         
     Returns:
@@ -311,7 +317,7 @@ def pad(img, y0, y1, x0, x1, border=cv2.BORDER_CONSTANT, value=None, rel=None):
         y0, y1, x0, x1 (int or float): Padding values for each side.
         border (int or str, optional): Border type. Can be one of: 'constant', 'replicate', 
             'reflect', 'wrap', 'default' or OpenCV flags. Defaults to cv2.BORDER_CONSTANT.
-        value: Border value for constant border type. Defaults to None.
+        value: Border color value for constant border type. Defaults to None.
         rel (bool, optional): Whether to interpret padding values as relative. Defaults to None.
         
     Returns:
@@ -325,6 +331,8 @@ def pad(img, y0, y1, x0, x1, border=cv2.BORDER_CONSTANT, value=None, rel=None):
         >>> img[25:75, 25:75] = [255, 255, 255]  # White square
         >>> # Pad with 10 pixels on each side
         >>> padded = cv3.pad(img, 10, 10, 10, 10)
+        >>> # Pad with custom border color
+        >>> padded = cv3.pad(img, 10, 10, 10, 10, value=[128, 128, 0])
     """
     return _pad(img, y0, y1, x0, x1, border=border, value=value, rel=rel)
 
@@ -338,7 +346,7 @@ def translate(img, x, y, border=cv2.BORDER_CONSTANT, value=None, rel=None):
         y (int or float): Shift in y direction.
         border (int or str, optional): Border type. Can be one of: 'constant', 'replicate',
             'reflect', 'wrap', 'default' or OpenCV flags. Defaults to cv2.BORDER_CONSTANT.
-        value: Border value for constant border type. Defaults to None.
+        value: Border color value for constant border type. Defaults to None.
         rel (bool, optional): Whether to interpret x and y as relative values. Defaults to None.
         
     Returns:
@@ -364,7 +372,7 @@ def xtranslate(img, x, border=cv2.BORDER_CONSTANT, value=None, rel=None):
         x (int or float): Shift in x direction.
         border (int or str, optional): Border type. Can be one of: 'constant', 'replicate',
             'reflect', 'wrap', 'default' or OpenCV flags. Defaults to cv2.BORDER_CONSTANT.
-        value: Border value for constant border type. Defaults to None.
+        value: Border color value for constant border type. Defaults to None.
         rel (bool, optional): Whether to interpret x as relative value. Defaults to None.
         
     Returns:
@@ -390,7 +398,7 @@ def ytranslate(img, y, border=cv2.BORDER_CONSTANT, value=None, rel=None):
         y (int or float): Shift in y direction.
         border (int or str, optional): Border type. Can be one of: 'constant', 'replicate',
             'reflect', 'wrap', 'default' or OpenCV flags. Defaults to cv2.BORDER_CONSTANT.
-        value: Border value for constant border type. Defaults to None.
+        value: Border color value for constant border type. Defaults to None.
         rel (bool, optional): Whether to interpret y as relative value. Defaults to None.
         
     Returns:
@@ -417,7 +425,7 @@ def rotate90(img, inter=cv2.INTER_LINEAR, border=cv2.BORDER_CONSTANT, value=None
             'area', 'cubic', 'lanczos4' or OpenCV flags. Defaults to cv2.INTER_LINEAR.
         border (int or str, optional): Border type. Can be one of: 'constant', 'replicate',
             'reflect', 'wrap', 'default' or OpenCV flags. Defaults to cv2.BORDER_CONSTANT.
-        value: Border value for constant border type. Defaults to None.
+        value: Border color value for constant border type. Defaults to None.
         
     Returns:
         numpy.ndarray: Rotated image.
@@ -443,7 +451,7 @@ def rotate180(img, inter=cv2.INTER_LINEAR, border=cv2.BORDER_CONSTANT, value=Non
             'area', 'cubic', 'lanczos4' or OpenCV flags. Defaults to cv2.INTER_LINEAR.
         border (int or str, optional): Border type. Can be one of: 'constant', 'replicate',
             'reflect', 'wrap', 'default' or OpenCV flags. Defaults to cv2.BORDER_CONSTANT.
-        value: Border value for constant border type. Defaults to None.
+        value: Border color value for constant border type. Defaults to None.
         
     Returns:
         numpy.ndarray: Rotated image.
@@ -469,7 +477,7 @@ def rotate270(img, inter=cv2.INTER_LINEAR, border=cv2.BORDER_CONSTANT, value=Non
             'area', 'cubic', 'lanczos4' or OpenCV flags. Defaults to cv2.INTER_LINEAR.
         border (int or str, optional): Border type. Can be one of: 'constant', 'replicate',
             'reflect', 'wrap', 'default' or OpenCV flags. Defaults to cv2.BORDER_CONSTANT.
-        value: Border value for constant border type. Defaults to None.
+        value: Border color value for constant border type. Defaults to None.
         
     Returns:
         numpy.ndarray: Rotated image.
@@ -494,7 +502,7 @@ def copyMakeBorder(img, y0, y1, x0, x1, border=cv2.BORDER_CONSTANT, value=None, 
         y0, y1, x0, x1 (int or float): Padding values for each side.
         border (int or str, optional): Border type. Can be one of: 'constant', 'replicate',
             'reflect', 'wrap', 'default' or OpenCV flags. Defaults to cv2.BORDER_CONSTANT.
-        value: Border value for constant border type. Defaults to None.
+        value: Border color value for constant border type. Defaults to None.
         rel (bool, optional): Whether to interpret padding values as relative. Defaults to None.
         
     Returns:
@@ -508,5 +516,7 @@ def copyMakeBorder(img, y0, y1, x0, x1, border=cv2.BORDER_CONSTANT, value=None, 
         >>> img[25:75, 25:75] = [255, 255, 255]  # White square
         >>> # Pad with 10 pixels on each side
         >>> padded = cv3.copyMakeBorder(img, 10, 10, 10, 10)
+        >>> # Pad with custom border color
+        >>> padded = cv3.copyMakeBorder(img, 10, 10, 10, 10, value='green')
     """
     return _copyMakeBorder(img, y0, y1, x0, x1, border=border, value=value, rel=rel)

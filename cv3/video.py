@@ -113,6 +113,16 @@ class VideoCapture(VideoInterface):
             IsADirectoryError: If src is a directory.
             FileNotFoundError: If src is a file path that doesn't exist.
             OSError: If the video stream cannot be opened.
+            
+        Examples:
+            >>> # Read from a video file
+            >>> cap = VideoCapture('video.mp4')
+            >>>
+            >>> # Read from a camera (index 0)
+            >>> cap = VideoCapture(0)
+            >>>
+            >>> # Read from a camera (by string index)
+            >>> cap = VideoCapture('0')
         """
         if isinstance(src, str) and src.isdecimal():
             src = int(src)
@@ -124,7 +134,7 @@ class VideoCapture(VideoInterface):
             src = str(src)
         self.stream = BaseVideoCapture(src)
         if not self.is_opened:
-            raise OSError(f"Video from source {src} didn't open")
+            raise OSError("Video from source {} didn't open".format(src))
         self.frame_cnt = round(self.stream.get(cv2.CAP_PROP_FRAME_COUNT))
         self.fps = round(self.stream.get(cv2.CAP_PROP_FPS))
         self.width = round(self.stream.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -152,7 +162,7 @@ class VideoCapture(VideoInterface):
             StopIteration: If the video has finished.
         """
         if not self.is_opened:
-            raise OSError(f"Video is closed")
+            raise OSError("Video is closed")
         _, frame = self.stream.read()
         if frame is None:
             raise StopIteration('Video has finished')
@@ -236,6 +246,20 @@ class VideoWriter(VideoInterface):
             fourcc (str or int, optional): FOURCC code for video codec. Defaults to opt.FOURCC.
             mkdir (bool, optional): If True, create parent directories if they don't exist.
                 Defaults to False.
+                
+        Examples:
+            >>> # Create a video writer with default settings
+            >>> writer = VideoWriter('output.mp4')
+            >>>
+            >>> # Create a video writer with custom FPS
+            >>> writer = VideoWriter('output.mp4', fps=30)
+            >>>
+            >>> # Create a video writer with string FOURCC
+            >>> writer = VideoWriter('output.mp4', fourcc='mp4v')
+            >>>
+            >>> # Create a video writer with integer FOURCC
+            >>> import cv2
+            >>> writer = VideoWriter('output.mp4', fourcc=cv2.VideoWriter_fourcc(*'mp4v'))
         """
         if mkdir:
             Path(save_path).parent.mkdir(parents=True, exist_ok=True)
@@ -287,8 +311,8 @@ class VideoWriter(VideoInterface):
             self.height, self.width = frame.shape[:2]
             self.stream = BaseVideoWriter(self.save_path, self.fourcc, self.fps, (self.width, self.height))
         if not self.is_opened:
-            raise OSError(f"Stream is closed")
-        assert (self.height, self.width) == frame.shape[:2], f'Shape mismatch. Required: {self.shape}'
+            raise OSError("Stream is closed")
+        assert (self.height, self.width) == frame.shape[:2], 'Shape mismatch. Required: {}'.format(self.shape)
         if opt.RGB:
             frame = rgb(frame)
         self.stream.write(frame)
@@ -308,12 +332,22 @@ def Video(path, mode='r', **kwds):
         
     Returns:
         VideoCapture or VideoWriter: VideoCapture instance if mode='r',
-            VideoWriter instance if mode='w'.
+        VideoWriter instance if mode='w'.
             
     Raises:
         TypeError: If keyword arguments are passed in 'r' mode.
+        
+    Examples:
+        >>> # Create a video reading stream
+        >>> reader = Video('video.mp4', mode='r')
+        >>>
+        >>> # Create a video writing stream
+        >>> writer = Video('output.mp4', mode='w')
+        >>>
+        >>> # Create a video writing stream with custom parameters
+        >>> writer = Video('output.mp4', mode='w', fps=30, fourcc='mp4v')
     """
-    assert mode in 'rw'
+    assert mode in ('r', 'w'), "Mode must be 'r' or 'w'"
     if mode == 'r':
         if kwds:
             raise TypeError(

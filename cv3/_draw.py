@@ -62,15 +62,28 @@ _FONTS_DICT = {
     'italic': cv2.FONT_ITALIC
 }
 
+_THRESHOLD_TYPE_DICT = {
+    'binary': cv2.THRESH_BINARY,
+    'binary_inv': cv2.THRESH_BINARY_INV,
+    'trunc': cv2.THRESH_TRUNC,
+    'tozero': cv2.THRESH_TOZERO,
+    'tozero_inv': cv2.THRESH_TOZERO_INV
+}
+
 
 def _line_type_flag_match(flag):
-    assert flag in _LINE_TYPE_DICT, f'no such flag: "{flag}". Available: {", ".join(_LINE_TYPE_DICT.keys())}'
+    assert flag in _LINE_TYPE_DICT, 'no such flag: "{}". Available: {}'.format(flag, ", ".join(_LINE_TYPE_DICT.keys()))
     return _LINE_TYPE_DICT[flag]
 
-
 def _font_flag_match(flag):
-    assert flag in _FONTS_DICT, f'no such flag: "{flag}". Available: {", ".join(_FONTS_DICT.keys())}'
+    assert flag in _FONTS_DICT, 'no such flag: "{}". Available: {}'.format(flag, ", ".join(_FONTS_DICT.keys()))
     return _FONTS_DICT[flag]
+
+
+def _threshold_type_flag_match(flag):
+    assert flag in _THRESHOLD_TYPE_DICT, 'no such flag: "{}". Available: {}'.format(flag, ", ".join(_THRESHOLD_TYPE_DICT.keys()))
+    return _THRESHOLD_TYPE_DICT[flag]
+
 
 
 def _handle_poly_pts(img, pts, rel=None):
@@ -82,18 +95,22 @@ def _handle_poly_pts(img, pts, rel=None):
 
 def _draw_decorator(func):
     @type_decorator
-    def wrapper(img, *args, color=None, line_type=cv2.LINE_8, copy=False, **kwargs):
+    def wrapper(img, *args, color=None, line_type=None, copy=False, **kwargs):
         if copy:
             img = img.copy()
 
         color = _process_color(color)
 
-        if isinstance(line_type, str):
+        # Handle line_type parameter
+        if line_type is None:
+            line_type = opt.LINE_TYPE
+        elif isinstance(line_type, str):
             line_type = _line_type_flag_match(line_type)
 
         kwargs['t'] = round(kwargs.get('t', opt.THICKNESS))
+        kwargs['line_type'] = line_type
 
-        return func(img, *args, color=color, line_type=line_type, **kwargs)
+        return func(img, *args, color=color, **kwargs)
 
     return wrapper
 
@@ -269,7 +286,7 @@ def _marker_flag_match(flag):
         'triangle_up': cv2.MARKER_TRIANGLE_UP,
         'triangle_down': cv2.MARKER_TRIANGLE_DOWN
     }
-    assert flag in marker_dict or flag in marker_dict.values(), f'no such flag: "{flag}". Available: {", ".join(marker_dict.keys())}'
+    assert flag in marker_dict or flag in marker_dict.values(), 'no such flag: "{}". Available: {}'.format(flag, ", ".join(marker_dict.keys()))
     return marker_dict.get(flag, flag)
 
 

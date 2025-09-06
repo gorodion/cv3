@@ -161,7 +161,7 @@ def test_imread_utf8_invalid():
 
 def test_imwrite_str():
     "Testing imwrite with string path"
-    Path(OUT_PATH_IMG).unlink(missing_ok=True)
+    if Path(OUT_PATH_IMG).exists(): Path(OUT_PATH_IMG).unlink()
     cv3.imwrite(OUT_PATH_IMG, test_img_bgr)
 
     assert os.path.isfile(OUT_PATH_IMG)
@@ -171,7 +171,7 @@ def test_imwrite_str():
 def test_imwrite_path():
     "Testing imwrite with pathlib.Path"
     out_path = Path(OUT_PATH_IMG)
-    out_path.unlink(missing_ok=True)
+    if out_path.exists(): out_path.unlink()
 
     cv3.imwrite(out_path, test_img_bgr)
     assert out_path.is_file()
@@ -228,9 +228,9 @@ def test_imwrite_invalid_extension():
 
 @pytest.fixture()
 def write_utf8_fixture():
-    Path(UTF8_PATH).unlink(missing_ok=True)
+    if Path(UTF8_PATH).exists(): Path(UTF8_PATH).unlink()
     yield
-    Path(UTF8_PATH).unlink(missing_ok=True)
+    if Path(UTF8_PATH).exists(): Path(UTF8_PATH).unlink()
 
 
 @pytest.mark.usefixtures('write_utf8_fixture')

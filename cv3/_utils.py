@@ -74,7 +74,7 @@ def _process_color(color):
     if color is None:
         color = opt.COLOR
     if isinstance(color, str):
-        assert color in COLORS_RGB_DICT, f'No such color: {color}. Available colors: {list(COLORS_RGB_DICT.keys())}'
+        assert color in COLORS_RGB_DICT, 'No such color: {}. Available colors: {}'.format(color, list(COLORS_RGB_DICT.keys()))
         color = COLORS_RGB_DICT[color]
         if not opt.RGB:
             color = color[::-1]
