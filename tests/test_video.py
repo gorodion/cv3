@@ -1,3 +1,14 @@
+"""Tests for video functions in cv3.
+
+This module contains comprehensive tests for video capture and writing functions
+provided by the cv3 library, including VideoCapture and VideoWriter operations.
+
+The tests verify that cv3 video functions produce the same results as
+their native OpenCV counterparts, ensuring compatibility and correctness.
+Tests cover various scenarios including different codecs, frame rates,
+and edge cases like non-existent files and invalid extensions.
+"""
+
 import numpy as np
 import cv2
 import cv3

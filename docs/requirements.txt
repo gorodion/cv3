@@ -1,0 +1,4 @@
+sphinx>=8.2.0
+sphinx-rtd-theme>=3.0.0
+numpy>=1.19.5
+opencv-python>=4.2.0.34

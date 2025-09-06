@@ -1,3 +1,14 @@
+"""Tests for input/output functions in cv3.
+
+This module contains comprehensive tests for image reading and writing functions
+provided by the cv3 library, including imread and imwrite operations.
+
+The tests verify that cv3 I/O functions produce the same results as
+their native OpenCV counterparts, ensuring compatibility and correctness.
+Tests cover various scenarios including different file formats, color spaces,
+and edge cases like non-existent files and invalid extensions.
+"""
+
 import numpy as np
 import cv2
 import cv3
@@ -249,4 +260,3 @@ def test_imread_imwrite_rgb():
     img = cv3.imread(OUT_PATH_IMG)
     assert np.array_equal(img, test_img)
     os.unlink(OUT_PATH_IMG)
-

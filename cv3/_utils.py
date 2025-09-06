@@ -1,3 +1,20 @@
+"""Internal utility functions for cv3.
+
+This module contains internal utility functions used by other modules in cv3.
+These functions are not meant to be used directly by users.
+
+Functions:
+    typeit: Cast image to uint8 type.
+    type_decorator: Decorator to automatically cast images to uint8.
+    _process_color: Process color values for drawing functions.
+    _relative_check: Check if coordinates are relative.
+    _relative_handle: Convert relative coordinates to absolute.
+    _handle_rect_mode: Convert rectangle coordinates between different formats.
+    _handle_rect_coords: Process rectangle coordinates with mode and relative handling.
+
+Constants:
+    COLORS_RGB_DICT: Dictionary of named colors and their RGB values.
+"""
 import warnings
 import numpy as np
 
@@ -8,6 +25,18 @@ warnings.simplefilter('always', UserWarning)
 
 
 def typeit(img):
+    """Cast image to uint8 type.
+    
+    Args:
+        img (numpy.ndarray): Input image.
+        
+    Returns:
+        numpy.ndarray: Image cast to uint8 type.
+        
+    Note:
+        If the image is already of type uint8, it is returned as is.
+        Otherwise, a warning is issued and the image is cast to uint8.
+    """
     if isinstance(img, np.ndarray) and img.dtype == np.uint8:
         return img
     warnings.warn('The image was copied because it needs to be cast to the correct type. To avoid copying, please cast the image to np.uint8')
@@ -15,6 +44,14 @@ def typeit(img):
 
 
 def type_decorator(func):
+    """Decorator to automatically cast images to uint8 type.
+    
+    Args:
+        func (callable): Function to decorate.
+        
+    Returns:
+        callable: Decorated function that automatically casts the first argument to uint8.
+    """
     def wrapper(img, *args, **kwargs):
         img = typeit(img)
         return func(img, *args, **kwargs)
@@ -22,6 +59,18 @@ def type_decorator(func):
 
 
 def _process_color(color):
+    """Process color values for drawing functions.
+    
+    Args:
+        color: Color value in various formats (str, int, float, list, tuple, np.ndarray).
+        
+    Returns:
+        tuple: Processed color as a tuple of integers in range [0, 255].
+        
+    Raises:
+        AssertionError: If color values are out of valid ranges.
+        ValueError: If color type is not supported.
+    """
     if color is None:
         color = opt.COLOR
     if isinstance(color, str):
@@ -49,6 +98,15 @@ def _process_color(color):
 
 
 def _relative_check(*args, rel):
+    """Check if coordinates are relative.
+    
+    Args:
+        *args: Coordinate values.
+        rel (bool or None): Relative flag. If None, it will be determined automatically.
+        
+    Returns:
+        bool: True if coordinates should be treated as relative, False otherwise.
+    """
     is_relative_coords = all(0 <= abs(x) <= 1 and isinstance(x, (float, np.floating)) for x in args)
     if is_relative_coords and rel is False:
         warnings.warn('`rel` param set to False but relative args passed')
@@ -58,6 +116,16 @@ def _relative_check(*args, rel):
 
 
 def _relative_handle(img, *args, rel):
+    """Convert relative coordinates to absolute coordinates.
+    
+    Args:
+        img (numpy.ndarray): Input image used to determine dimensions.
+        *args: Coordinate values.
+        rel (bool): Relative flag.
+        
+    Returns:
+        tuple: Absolute coordinates as integers.
+    """
     if _relative_check(*args, rel=rel):
         h, w = img.shape[:2]
         return tuple(rel2abs(*args, width=w, height=h))
@@ -65,6 +133,24 @@ def _relative_handle(img, *args, rel):
 
 
 def _handle_rect_mode(mode, x0, y0, x1, y1):
+    """Convert rectangle coordinates between different formats.
+    
+    Args:
+        mode (str): Coordinate format mode. One of 'xyxy', 'xywh', 'ccwh', 'yyxx'.
+        x0 (float): First x coordinate.
+        y0 (float): First y coordinate.
+        x1 (float): Second x coordinate.
+        y1 (float): Second y coordinate.
+        
+    Returns:
+        tuple: Converted coordinates as (x0, y0, x1, y1).
+        
+    Note:
+        - 'xyxy': Top-left and bottom-right corners
+        - 'xywh': Top-left corner and width/height
+        - 'ccwh': Center and width/height
+        - 'yyxx': Top-right and bottom-left corners (ymin, ymax, xmin, xmax)
+    """
     assert mode in ('xyxy', 'xywh', 'ccwh', 'yyxx')
     if mode == 'xyxy':
         return x0, y0, x1, y1
@@ -77,6 +163,20 @@ def _handle_rect_mode(mode, x0, y0, x1, y1):
 
 
 def _handle_rect_coords(img, x0, y0, x1, y1, mode='xyxy', rel=None):
+    """Process rectangle coordinates with mode and relative handling.
+    
+    Args:
+        img (numpy.ndarray): Input image used to determine dimensions for relative coordinates.
+        x0 (float): First x coordinate.
+        y0 (float): First y coordinate.
+        x1 (float): Second x coordinate.
+        y1 (float): Second y coordinate.
+        mode (str): Coordinate format mode. One of 'xyxy', 'xywh', 'ccwh', 'yyxx'.
+        rel (bool or None): Relative flag. If None, it will be determined automatically.
+        
+    Returns:
+        tuple: Processed coordinates as integers.
+    """
     rel = _relative_check(x0, y0, x1, y1, rel=rel)  # for 'xywh' and 'ccwh' modes
     x0, y0, x1, y1 = _handle_rect_mode(mode, x0, y0, x1, y1)
     return _relative_handle(img, x0, y0, x1, y1, rel=rel)
