@@ -81,7 +81,7 @@ def rectangle(img, x0, y0, x1, y1, mode='xyxy', rel=None, color=None, t=None, li
         rel (bool, optional): Whether to use relative coordinates. Defaults to None.
         color: Color of the rectangle (default: opt.COLOR).
         t: Thickness of the rectangle lines (default: opt.THICKNESS).
-        line_type: Type of line for drawing (default: cv2.LINE_8).
+        line_type: Type of line for drawing (default: opt.LINE_TYPE).
         fill (bool, optional): Whether to fill the rectangle. If True, draws a filled rectangle
             regardless of thickness. If False, draws an outlined rectangle. If None, uses
             the thickness parameter to determine fill behavior. Defaults to None.
@@ -138,7 +138,7 @@ def polylines(img, pts, is_closed=False, rel=None, color=None, t=None, line_type
         rel (bool, optional): Whether to use relative coordinates. Defaults to None.
         color: Color of the polylines (default: opt.COLOR).
         t: Thickness of the lines (default: opt.THICKNESS).
-        line_type: Type of line for drawing (default: cv2.LINE_8).
+        line_type: Type of line for drawing (default: opt.LINE_TYPE).
         copy (bool): Whether to copy the image before drawing (default: False).
 
     Returns:
@@ -217,7 +217,7 @@ def circle(img, x0, y0, r, rel=None, color=None, t=None, line_type=None, fill=No
         rel (bool, optional): Whether to use relative coordinates. Defaults to None.
         color: Color of the circle (default: opt.COLOR).
         t: Thickness of the circle line. Use -1 or cv2.FILLED for filled circle (default: opt.THICKNESS).
-        line_type: Type of line for drawing (default: cv2.LINE_8).
+        line_type: Type of line for drawing (default: opt.LINE_TYPE).
         fill (bool, optional): Whether to fill the circle. If True, draws a filled circle
             regardless of thickness. If False, draws an outlined circle. If None, uses
             the thickness parameter to determine fill behavior. Defaults to None.
@@ -305,7 +305,7 @@ def line(img, x0, y0, x1, y1, rel=None, color=None, t=None, line_type=None, copy
         rel (bool, optional): Whether to use relative coordinates. Defaults to None.
         color: Color of the line (default: opt.COLOR).
         t: Thickness of the line (default: opt.THICKNESS).
-        line_type: Type of line for drawing (default: cv2.LINE_8).
+        line_type: Type of line for drawing (default: opt.LINE_TYPE).
         copy (bool): Whether to copy the image before drawing (default: False).
 
     Returns:
@@ -340,7 +340,7 @@ def hline(img, y, rel=None, color=None, t=None, line_type=None, copy=False):
         rel (bool, optional): Whether to use relative coordinates. Defaults to None.
         color: Color of the line (default: opt.COLOR).
         t: Thickness of the line (default: opt.THICKNESS).
-        line_type: Type of line for drawing (default: cv2.LINE_8).
+        line_type: Type of line for drawing (default: opt.LINE_TYPE).
         copy (bool): Whether to copy the image before drawing (default: False).
 
     Returns:
@@ -375,7 +375,7 @@ def vline(img, x, rel=None, color=None, t=None, line_type=None, copy=False):
         rel (bool, optional): Whether to use relative coordinates. Defaults to None.
         color: Color of the line (default: opt.COLOR).
         t: Thickness of the line (default: opt.THICKNESS).
-        line_type: Type of line for drawing (default: cv2.LINE_8).
+        line_type: Type of line for drawing (default: opt.LINE_TYPE).
         copy (bool): Whether to copy the image before drawing (default: False).
 
     Returns:
@@ -422,7 +422,7 @@ def text(img, text_str, x=0.5, y=0.5, font=None, scale=None, flip=False, rel=Non
         rel (bool, optional): Whether to use relative coordinates. Defaults to None.
         color: Color of the text (default: opt.COLOR).
         t: Thickness of the text strokes (default: opt.THICKNESS).
-        line_type: Type of line for drawing (default: cv2.LINE_8).
+        line_type: Type of line for drawing (default: opt.LINE_TYPE).
         copy (bool): Whether to copy the image before drawing (default: False).
 
     Returns:
@@ -467,7 +467,7 @@ def rectangles(img: np.array, rects: List[List], color=None, t=None, line_type=N
             of parameters to pass to the rectangle function.
         color: Color of the rectangles (default: opt.COLOR).
         t: Thickness of the rectangle lines (default: opt.THICKNESS).
-        line_type: Type of line for drawing (default: cv2.LINE_8).
+        line_type: Type of line for drawing (default: opt.LINE_TYPE).
         fill (bool, optional): Whether to fill the rectangles. If True, draws filled rectangles
             regardless of thickness. If False, draws outlined rectangles. If None, uses
             the thickness parameter to determine fill behavior. Defaults to None.
@@ -572,7 +572,7 @@ def arrow(img, x0, y0, x1, y1, rel=None, color=None, t=None, line_type=None, tip
         rel (bool, optional): Whether to use relative coordinates. Defaults to None.
         color: Color of the arrow (default: opt.COLOR).
         t: Thickness of the arrow (default: opt.THICKNESS).
-        line_type: Type of line for drawing (default: cv2.LINE_8).
+        line_type: Type of line for drawing (default: opt.LINE_TYPE).
         tip_length (float, optional): The length of the arrow tip in relation to the arrow length.
             Defaults to 0.1.
         copy (bool): Whether to copy the image before drawing (default: False).
@@ -623,7 +623,7 @@ def ellipse(img, x, y, axes_x, axes_y, angle=0, start_angle=0, end_angle=360, re
         rel (bool, optional): Whether to use relative coordinates. Defaults to None.
         color: Color of the ellipse (default: opt.COLOR).
         t: Thickness of the ellipse line. Use -1 or cv2.FILLED for filled ellipse (default: opt.THICKNESS).
-        line_type: Type of line for drawing (default: cv2.LINE_8).
+        line_type: Type of line for drawing (default: opt.LINE_TYPE).
         fill (bool, optional): Whether to fill the ellipse. If True, draws a filled ellipse
             regardless of thickness. If False, draws an outlined ellipse. If None, uses
             the thickness parameter to determine fill behavior. Defaults to None.
@@ -684,7 +684,7 @@ def marker(img, x, y, marker_type=None, marker_size=None, rel=None, color=None, 
         rel (bool, optional): Whether to use relative coordinates. Defaults to None.
         color: Color of the marker (default: opt.COLOR).
         t: Thickness of the marker lines (default: opt.THICKNESS).
-        line_type: Type of line for drawing (default: cv2.LINE_8).
+        line_type: Type of line for drawing (default: opt.LINE_TYPE).
         copy (bool): Whether to copy the image before drawing (default: False).
 
     Returns:

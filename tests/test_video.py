@@ -75,7 +75,7 @@ def imgseq_fixture():
     imgseq_dir = Path(IMGSEQ_DIR)
     imgseq_dir.mkdir(parents=True, exist_ok=True)
     for i, frame in enumerate(cv3.Video(TEST_VID)):
-        cv3.imwrite(imgseq_dir / f'img{i//30:02d}.png', frame)
+        cv3.imwrite(imgseq_dir / 'img{:02d}.png'.format(i//30), frame)
     yield
     shutil.rmtree(IMGSEQ_DIR, ignore_errors=True)
 

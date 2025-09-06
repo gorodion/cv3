@@ -66,7 +66,7 @@ with cv3.Window('Result') as window:
 This is just a small example of what cv3 can do. Check out the [documentation](https://cv3.readthedocs.io/en/latest/)
 for a comprehensive overview of all the improvements and additions that cv3 provides over raw OpenCV.
 
-You can also get acquainted with the features in [demo.ipynb](https://github.com/gorodion/pycv/blob/main/demo.ipynb)
+You can also get acquainted with the features in [demo.ipynb](https://github.com/gorodion/cv3/blob/main/demo.ipynb)
 
 ## Run tests
 

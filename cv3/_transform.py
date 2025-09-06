@@ -45,7 +45,7 @@ def _inter_flag_match(flag):
     Raises:
         AssertionError: If flag is not one of the valid options.
     """
-    assert flag in _INTER_DICT, f'no such flag: "{flag}". Available: {", ".join(_INTER_DICT.keys())}'
+    assert flag in _INTER_DICT, 'no such flag: "{}". Available: {}'.format(flag, ", ".join(_INTER_DICT.keys()))
     return _INTER_DICT[flag]
 
 
@@ -61,7 +61,7 @@ def _border_flag_match(flag):
     Raises:
         AssertionError: If flag is not one of the valid options.
     """
-    assert flag in _BORDER_DICT, f'no such flag: "{flag}". Available: {", ".join(_BORDER_DICT.keys())}'
+    assert flag in _BORDER_DICT, 'no such flag: "{}". Available: {}'.format(flag, ", ".join(_BORDER_DICT.keys()))
     return _BORDER_DICT[flag]
 
 

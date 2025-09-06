@@ -1,4 +1,24 @@
 # Changelog
+## [1.3.1] - 2025-09-07
+
+### Added
+* default line_type value moved to cv3.opt
+* updated threshold function with type parameter and relative values support
+* new test_threshold_all_types in test_processing.py
+* opt functions validation and tests in test_other
+* examples in video.py for VideoCapture, VideoWriter, and Video functions
+
+### Changed
+* got rid of f-strings for compatibility with early python versions
+* got rid of TODOs
+* small docs corrections
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
 ## [1.3.0] - 2025-08-31
 
 ### Added
