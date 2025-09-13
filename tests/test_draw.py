@@ -255,6 +255,47 @@ class TestRectangle(Shape):
         )
 
 
+class TestRectangles:
+    def test_rectangles_without_optional_params(self):
+        """Test rectangles function without optional parameters."""
+        img_cv3 = cv3.zeros(100, 100)
+        img_cv2 = cv3.zeros(100, 100)
+        
+        rectangles = [
+            [10, 10, 30, 30],
+            [40, 40, 60, 60],
+            [70, 70, 90, 90]
+        ]
+        
+        # Draw rectangles using cv3
+        img_cv3 = cv3.rectangles(img_cv3, rectangles)
+        
+        # Draw rectangles using native cv2
+        for rect in rectangles:
+            img_cv2 = cv2.rectangle(img_cv2, (rect[0], rect[1]), (rect[2], rect[3]), COLOR, THICKNESS)
+        
+        assert np.array_equal(img_cv3, img_cv2)
+    
+    def test_rectangles_with_optional_params(self):
+        """Test rectangles function with optional parameters."""
+        img_cv3 = cv3.zeros(100, 100, 3)
+        img_cv2 = cv3.zeros(100, 100, 3)
+        
+        rectangles = [
+            [10, 10, 30, 30],
+            [40, 40, 60, 60]
+        ]
+        
+        # Draw rectangles using cv3 with optional parameters
+        img_cv3 = cv3.rectangles(img_cv3, rectangles, color=(255, 0, 0), t=2, line_type=cv2.LINE_8)
+        
+        # Draw rectangles using native cv2 with optional parameters
+        for rect in rectangles:
+            img_cv2 = cv2.rectangle(img_cv2, (rect[0], rect[1]), (rect[2], rect[3]), (255, 0, 0), 2, lineType=cv2.LINE_8)
+        
+        assert np.array_equal(img_cv3, img_cv2)
+
+
 class TestPolylines(Shape):
     pts = np.int32([
         [[10, 10]],
@@ -357,6 +398,69 @@ class TestCircle(Shape):
         paint_cv3 = cv3.circle(cv3.zeros(100, 100), 50, 60, 30.2)
         assert np.array_equal(paint_cv2, paint_cv3)
 
+    def test_r_mode_w(self):
+        """Test relative radius mode 'w' (width)."""
+        img = cv3.zeros(100, 200)  # width=200, height=100
+        # r=0.5 with r_mode='w' should result in radius=100 (0.5 * 200)
+        paint_cv3 = cv3.circle(img, 0.5, 0.5, 0.5, rel=True, r_mode='w')
+        paint_cv2 = cv2.circle(img.copy(), (100, 50), round(0.5*200), COLOR, THICKNESS)
+        assert np.array_equal(paint_cv3, paint_cv2)
+
+    def test_r_mode_h(self):
+        """Test relative radius mode 'h' (height)."""
+        img = cv3.zeros(100, 200)  # width=200, height=100
+        # r=0.5 with r_mode='h' should result in radius=50 (0.5 * 100)
+        paint_cv3 = cv3.circle(img, 0.5, 0.5, 0.5, rel=True, r_mode='h')
+        paint_cv2 = cv2.circle(img.copy(), (100, 50), round(0.5*100), COLOR, THICKNESS)
+        assert np.array_equal(paint_cv3, paint_cv2)
+
+    def test_r_mode_min(self):
+        """Test relative radius mode 'min' (minimum of width and height)."""
+        img = cv3.zeros(100, 200)  # width=200, height=100
+        # r=0.5 with r_mode='min' should result in radius=50 (0.5 * min(200, 100))
+        paint_cv3 = cv3.circle(img, 0.5, 0.5, 0.5, rel=True, r_mode='min')
+        paint_cv2 = cv2.circle(img.copy(), (100, 50), round(0.5*min(200, 100)), COLOR, THICKNESS)
+        assert np.array_equal(paint_cv3, paint_cv2)
+
+    def test_r_mode_max(self):
+        """Test relative radius mode 'max' (maximum of width and height)."""
+        img = cv3.zeros(100, 200)  # width=200, height=100
+        # r=0.5 with r_mode='max' should result in radius=100 (0.5 * max(200, 100))
+        paint_cv3 = cv3.circle(img, 0.5, 0.5, 0.5, rel=True, r_mode='max')
+        paint_cv2 = cv2.circle(img.copy(), (100, 50), round(0.5*max(200, 100)), COLOR, THICKNESS)
+        assert np.array_equal(paint_cv3, paint_cv2)
+
+    def test_r_mode_diag(self):
+        """Test relative radius mode 'diag' (image diagonal)."""
+        img = cv3.zeros(100, 200)  # width=200, height=100
+        # Diagonal = sqrt(200^2 + 100^2) = sqrt(50000) ≈ 223.6
+        # r=0.5 with r_mode='diag' should result in radius=112 (0.5 * 223.6 ≈ 112)
+        paint_cv3 = cv3.circle(img, 0.5, 0.5, 0.5, rel=True, r_mode='diag')
+        paint_cv2 = cv2.circle(img.copy(), (100, 50), round(0.5*(200**2+100**2)**0.5), COLOR, THICKNESS)
+        assert np.array_equal(paint_cv3, paint_cv2)
+
+    def test_r_mode_default(self):
+        """Test default r_mode ('min') when not specified."""
+        img = cv3.zeros(100, 200)  # width=200, height=100
+        # r=0.5 with default r_mode='min' should result in radius=50 (0.5 * min(200, 100))
+        paint_cv3_default = cv3.circle(img, 0.5, 0.5, 0.5, rel=True)  # r_mode defaults to 'min'
+        paint_cv3_min = cv3.circle(img, 0.5, 0.5, 0.5, rel=True, r_mode='min')  # r_mode defaults to 'min'
+        assert np.array_equal(paint_cv3_default, paint_cv3_min)
+
+    def test_r_mode_invalid(self):
+        """Test that invalid r_mode raises ValueError."""
+        img = cv3.zeros(100, 100)
+        with pytest.raises(ValueError, match="r_mode must be one of 'w', 'h', 'min', 'max', 'diag'"):
+            cv3.circle(img, 50, 50, 0.5, rel=True, r_mode='invalid')
+
+    def test_r_absolute_with_r_mode(self):
+        """Test that r_mode is ignored when rel=False for radius."""
+        img = cv3.zeros(100, 200)  # width=200, height=100
+        # With absolute radius (rel=False or rel=None for radius), r_mode should be ignored
+        paint_cv3 = cv3.circle(img, 50, 50, 30, r_mode='w')  # r=30 is absolute
+        paint_cv2 = cv2.circle(img.copy(), (50, 50), 30, COLOR, THICKNESS)
+        assert np.array_equal(paint_cv3, paint_cv2)
+
 class TestPoint:
     def test_basic(self):
         paint_cv2 = cv2.circle(np.zeros((100, 100), np.uint8), (50, 60), cv3.opt.PT_RADIUS, COLOR, -1)
@@ -367,6 +471,47 @@ class TestPoint:
         paint_cv2 = cv2.circle(np.zeros((100, 100), np.uint8), (50, 60), 0, COLOR, -1)
         paint_cv3 = cv3.point(cv3.zeros(100, 100), 50, 60, 0)
         assert np.array_equal(paint_cv2, paint_cv3)
+
+
+class TestPoints:
+    def test_points_without_optional_params(self):
+        """Test points function without optional parameters."""
+        img_cv3 = cv3.zeros(100, 100)
+        img_cv2 = cv3.zeros(100, 100)
+        
+        points = [
+            [10, 10],
+            [40, 40],
+            [70, 70]
+        ]
+        
+        # Draw points using cv3
+        img_cv3 = cv3.points(img_cv3, points)
+        
+        # Draw points using native cv2
+        for pt in points:
+            img_cv2 = cv2.circle(img_cv2, (pt[0], pt[1]), cv3.opt.PT_RADIUS, COLOR, -1)
+        
+        assert np.array_equal(img_cv3, img_cv2)
+    
+    def test_points_with_optional_params(self):
+        """Test points function with optional parameters."""
+        img_cv3 = cv3.zeros(100, 100, 3)
+        img_cv2 = cv3.zeros(100, 100, 3)
+        
+        points = [
+            [10, 10],
+            [40, 40]
+        ]
+        
+        # Draw points using cv3 with optional parameters
+        img_cv3 = cv3.points(img_cv3, points, r=5, color=(255, 0, 0))
+        
+        # Draw points using native cv2 with optional parameters
+        for pt in points:
+            img_cv2 = cv2.circle(img_cv2, (pt[0], pt[1]), 5, (255, 0, 0), -1)
+        
+        assert np.array_equal(img_cv3, img_cv2)
 
 
 class TestLine(Shape):
