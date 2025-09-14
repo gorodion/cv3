@@ -517,9 +517,51 @@ class Windows:
 waitKey = wait_key
 """Alias for wait_key function."""
 
-destroy_windows = destroyAllWindows = cv2.destroyAllWindows
-"""Function to destroy all windows."""
+def destroy_windows():
+    """Destroy all windows.
+    
+    This function destroys all windows that were created with imshow or Window.
+    
+    Note:
+        This is a wrapper around cv2.destroyAllWindows().
+        
+    Example:
+        >>> import cv3
+        >>> # Create and display an image
+        >>> import numpy as np
+        >>> img = np.zeros((100, 100, 3), dtype=np.uint8)
+        >>> cv3.imshow('Window1', img)
+        >>> cv3.imshow('Window2', img)
+        >>> # Destroy all windows
+        >>> cv3.destroy_windows()
+    """
+    cv2.destroyAllWindows()
 
-destroy_window = destroyWindow = cv2.destroyWindow
-"""Function to destroy a specific window."""
+
+def destroy_window(winname: str):
+    """Destroy a specific window.
+    
+    Args:
+        winname (str): Name of the window to destroy.
+        
+    Note:
+        This is a wrapper around cv2.destroyWindow().
+        
+    Example:
+        >>> import cv3
+        >>> # Create and display an image
+        >>> import numpy as np
+        >>> img = np.zeros((100, 100, 3), dtype=np.uint8)
+        >>> cv3.imshow('My Window', img)
+        >>> # Destroy the specific window
+        >>> cv3.destroy_window('My Window')
+    """
+    cv2.destroyWindow(winname)
+
+
+destroyAllWindows = destroy_windows
+"""Alias for destroy_windows function."""
+
+destroyWindow = destroy_window
+"""Alias for destroy_window function."""
 

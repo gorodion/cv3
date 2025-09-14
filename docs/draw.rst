@@ -28,3 +28,4 @@ user-friendly interface than OpenCV's native drawing functions.
    ellipse
    marker
    getTextSize
+   putText

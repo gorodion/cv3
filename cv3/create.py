@@ -11,7 +11,6 @@ Functions:
     empty, empty_like: Create uninitialized arrays.
     white, white_like: Create arrays filled with white pixels (255).
     random, rand, randn, randint: Create arrays filled with random values.
-    black, black_like: Aliases for zeros and zeros_like.
 """
 import numpy as np
 
@@ -271,5 +270,12 @@ def random(*args):
 
 # Aliases for convenience
 black = zeros
+"""Alias for :func:`zeros` function."""
 black_like = zeros_like
-rand = randn = randint = random
+"""Alias for :func:`zeros_like` function."""
+rand = random
+"""Alias for :func:`random` function."""
+randn = random
+"""Alias for :func:`random` function."""
+randint = random
+"""Alias for :func:`random` function."""

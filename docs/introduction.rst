@@ -70,5 +70,5 @@ Quick Start
        window.imshow(img)
        window.wait_key(0)
 
-This is just a small example of what cv3 can do. Check out the :doc:`features` page for 
+This is just a small example of what cv3 can do. Check out the :doc:`core_concepts` page for
 a comprehensive overview of all the improvements and additions that cv3 provides over raw OpenCV.

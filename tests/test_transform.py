@@ -17,7 +17,7 @@ from functools import partial
 import pytest
 
 COLOR = cv3.opt.COLOR
-TEST_IMG = 'img.jpeg'
+TEST_IMG = 'data/image.jpg'
 img_bgr = cv2.imread(TEST_IMG)
 img = cv2.cvtColor(img_bgr, code=cv2.COLOR_RGB2BGR)
 
@@ -190,6 +190,21 @@ class TestCrop:
 
     def test_zero_size(self):
         cv3.crop(img, 20, 30, 20, 60)
+
+    def test_copy_false(self):
+        """Test that copy=False returns a view of the original image data."""
+        # Crop with copy=True (default)
+        cropped_copy = cv3.crop(img, 20, 30, 70, 80, copy=True)
+        
+        # Crop with copy=False
+        cropped_view = cv3.crop(img, 20, 30, 70, 80, copy=False)
+        
+        # Both should have the same values
+        assert np.array_equal(cropped_copy, cropped_view)
+        
+        # But cropped_copy should not share memory with img, while cropped_view should
+        assert not np.shares_memory(cropped_copy, img)
+        assert np.shares_memory(cropped_view, img)
 
 
 class TestPad(BaseTestBorder):

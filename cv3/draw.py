@@ -23,7 +23,6 @@ Functions:
 
 Constants:
     COLORS: List of named colors available for use in drawing functions.
-    putText: Alias for the text function.
 """
 import warnings
 import numpy as np
@@ -707,3 +706,8 @@ def getTextSize(text, font=None, scale=None, t=None):
         raise RuntimeError("This function is experimental. Use opt.set_exp() to enable it.")
     
     return _get_text_size(text, font=font, scale=scale, t=t)
+
+
+# Aliases for OpenCV compatibility
+putText = text
+"""Alias for text function."""
