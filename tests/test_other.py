@@ -13,7 +13,7 @@ import cv2
 import cv3
 import pytest
 
-TEST_IMG = 'img.jpeg'
+TEST_IMG = 'data/image.jpg'
 img_bgr = cv2.imread(TEST_IMG)
 img_gray = cv2.imread(TEST_IMG, 0)
 img = cv2.cvtColor(img_bgr, code=cv2.COLOR_RGB2BGR)

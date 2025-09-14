@@ -18,15 +18,15 @@ import shutil
 import pytest
 
 
-TEST_VID = 'vid.mp4'
+TEST_VID = 'data/vid.mp4'
 NON_EXIST_VID = 'spamvid.mp4'
 OUT_PATH_VID = 'output.mp4'
 OUT_PATH_VID_AVI = 'output.avi'
-INVALID_EXT_PATH = 'vid.mp4xxx'
+INVALID_EXT_PATH = 'data/vid.mp4xxx'
 TMP_DIR = 'temp/'
 IMGSEQ_DIR = 'imgseq/'
 TESTS_DIR = 'tests'
-frame = cv3.imread('img.jpeg')
+frame = cv3.imread('data/image.jpg')
 
 
 def test_capture_open_read():

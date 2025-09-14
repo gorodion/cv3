@@ -398,7 +398,7 @@ class TestCircle(Shape):
         paint_cv3 = cv3.circle(cv3.zeros(100, 100), 50, 60, 30.2)
         assert np.array_equal(paint_cv2, paint_cv3)
 
-    def test_r_mode_w(self):
+    def test_r_modes(self):
         """Test relative radius mode 'w' (width)."""
         img = cv3.zeros(100, 200)  # width=200, height=100
         # r=0.5 with r_mode='w' should result in radius=100 (0.5 * 200)
@@ -406,7 +406,6 @@ class TestCircle(Shape):
         paint_cv2 = cv2.circle(img.copy(), (100, 50), round(0.5*200), COLOR, THICKNESS)
         assert np.array_equal(paint_cv3, paint_cv2)
 
-    def test_r_mode_h(self):
         """Test relative radius mode 'h' (height)."""
         img = cv3.zeros(100, 200)  # width=200, height=100
         # r=0.5 with r_mode='h' should result in radius=50 (0.5 * 100)
@@ -414,7 +413,6 @@ class TestCircle(Shape):
         paint_cv2 = cv2.circle(img.copy(), (100, 50), round(0.5*100), COLOR, THICKNESS)
         assert np.array_equal(paint_cv3, paint_cv2)
 
-    def test_r_mode_min(self):
         """Test relative radius mode 'min' (minimum of width and height)."""
         img = cv3.zeros(100, 200)  # width=200, height=100
         # r=0.5 with r_mode='min' should result in radius=50 (0.5 * min(200, 100))
@@ -422,7 +420,6 @@ class TestCircle(Shape):
         paint_cv2 = cv2.circle(img.copy(), (100, 50), round(0.5*min(200, 100)), COLOR, THICKNESS)
         assert np.array_equal(paint_cv3, paint_cv2)
 
-    def test_r_mode_max(self):
         """Test relative radius mode 'max' (maximum of width and height)."""
         img = cv3.zeros(100, 200)  # width=200, height=100
         # r=0.5 with r_mode='max' should result in radius=100 (0.5 * max(200, 100))
@@ -430,7 +427,6 @@ class TestCircle(Shape):
         paint_cv2 = cv2.circle(img.copy(), (100, 50), round(0.5*max(200, 100)), COLOR, THICKNESS)
         assert np.array_equal(paint_cv3, paint_cv2)
 
-    def test_r_mode_diag(self):
         """Test relative radius mode 'diag' (image diagonal)."""
         img = cv3.zeros(100, 200)  # width=200, height=100
         # Diagonal = sqrt(200^2 + 100^2) = sqrt(50000) ≈ 223.6
