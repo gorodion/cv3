@@ -514,9 +514,6 @@ class Windows:
         """
         self.close()
 
-waitKey = wait_key
-"""Alias for wait_key function."""
-
 def destroy_windows():
     """Destroy all windows.
     
@@ -558,10 +555,11 @@ def destroy_window(winname: str):
     """
     cv2.destroyWindow(winname)
 
-
+# Aliases
+waitKey = wait_key
+"""Alias for :func:`wait_key`."""
 destroyAllWindows = destroy_windows
-"""Alias for destroy_windows function."""
-
+"""Alias for :func:`destroy_windows`."""
 destroyWindow = destroy_window
-"""Alias for destroy_window function."""
+"""Alias for :func:`destroy_window`."""
 

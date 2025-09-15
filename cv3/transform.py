@@ -338,21 +338,6 @@ def pad(img, y0, y1, x0, x1, border=cv2.BORDER_CONSTANT, value=None, rel=None):
     return _pad(img, y0, y1, x0, x1, border=border, value=value, rel=rel)
 
 
-def translate(img, x, y, border=cv2.BORDER_CONSTANT, value=None, rel=None):
-    """Alias for shift."""
-    return _shift(img, x, y, border=border, value=value, rel=rel)
-
-
-def xtranslate(img, x, border=cv2.BORDER_CONSTANT, value=None, rel=None):
-    """Alias for xshift."""
-    return _xshift(img, x, border=border, value=value, rel=rel)
-
-
-def ytranslate(img, y, border=cv2.BORDER_CONSTANT, value=None, rel=None):
-    """Alias for yshift."""
-    return _yshift(img, y, border=border, value=value, rel=rel)
-
-
 def rotate90(img, inter=cv2.INTER_LINEAR, border=cv2.BORDER_CONSTANT, value=None):
     """Rotate image by 90 degrees clockwise.
     
@@ -430,7 +415,13 @@ def rotate270(img, inter=cv2.INTER_LINEAR, border=cv2.BORDER_CONSTANT, value=Non
     """
     return _rotate(img, 270, inter=inter, border=border, value=value)
 
+# Aliases
+translate = shift
+"""Alias for :func:`shift`."""
+xtranslate = xshift
+"""Alias for :func:`xshift`."""
+ytranslate = yshift
+"""Alias for :func:`yshift`."""
+copyMakeBorder = pad
+"""Alias for :func:`pad`."""
 
-def copyMakeBorder(img, y0, y1, x0, x1, border=cv2.BORDER_CONSTANT, value=None, rel=None):
-    """Alias for pad."""
-    return _pad(img, y0, y1, x0, x1, border=border, value=value, rel=rel)
