@@ -62,7 +62,15 @@ class VideoInterface:
         return self.isOpened()
 
     def release(self):
-        """Release the video stream and free associated resources."""
+        """Release the video stream and free associated resources.
+        
+        Note:
+            If the stream has not been started, a warning will be issued.
+        """
+        if self.stream is None:
+            warnings.warn("Stream not started")
+            return
+
         self.stream.release()
 
     @property
@@ -286,17 +294,6 @@ class VideoWriter(VideoInterface):
         if self.stream is None:
             return False
         return super().isOpened()
-
-    def release(self):
-        """Release the video writer stream and free associated resources.
-        
-        Note:
-            If the stream has not been started, a warning will be issued.
-        """
-        if self.stream is None:
-            warnings.warn("Stream not started")
-            return
-        super().release()
 
     def write(self, frame: np.ndarray):
         """Write a frame to the video file.

@@ -28,7 +28,10 @@ cv3 uses RGB format by default for images, which is more intuitive for most Pyth
 Auto Scaling with Relative Coordinates
 --------------------------------------
 
-Many cv3 functions support relative coordinates through the ``rel=True`` parameter, making it easier to work with images of different sizes. This feature is available in both drawing and transformation functions.
+Many cv3 functions support relative coordinates, making it easier to work with images of different sizes. Coordinates between 0 and 1 are automatically detected as relative, but you can also explicitly set ``rel=True`` to force relative coordinate interpretation. This feature is available in both drawing and transformation functions.
+
+.. warning::
+   It is highly recommended to explicitly set ``rel=True`` when you know your coordinates are relative. While cv3 can automatically detect relative coordinates in the range [0, 1], explicitly setting ``rel=True`` makes your code more readable and prevents potential issues with absolute coordinates that happen to be in this range.
 
 Drawing with Relative Coordinates
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -48,6 +51,8 @@ Drawing with Relative Coordinates
 
 Transformations with Relative Coordinates
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Coordinates between 0 and 1 are automatically detected as relative in transformation functions, but you can also explicitly set ``rel=True`` to force relative coordinate interpretation.
 
 .. code-block:: python
 
@@ -87,28 +92,30 @@ The ``cv3.transform`` function provides a convenient way to apply both rotation 
 Dynamic Typing Support
 ----------------------
 
-cv3 functions are designed to be flexible with input types, automatically handling conversions where appropriate. This includes supporting non-uint8 image formats and floating-point coordinates.
+cv3 functions are designed to be flexible with input types, automatically handling conversions where appropriate. This includes supporting float image formats with values in the range [0, 1] which are automatically scaled to [0, 255] and converted to uint8, as well as supporting floating-point coordinates.
 
-Handling Non-uint8 Image Formats
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Handling Float Image Formats
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
    import cv3
-   import numpy as np
    
-   # Create a float image (not uint8)
-   float_img = np.random.rand(100, 100, 3).astype(np.float32)
+   # Get a float image (not uint8)
+   img = cv3.imread('image.jpg')
+   norm_img = img.astype(float) / 255 # from 0 to 1
    
    # cv3 functions automatically handle the type conversion
-   cropped = cv3.crop(float_img, 10, 10, 50, 50)
-   print(cropped.dtype)  # float32 (preserved)
+   cropped = cv3.crop(norm_img, 170, 20, 270, 120)
+   print(cropped.dtype)  # uint8
    
    # Drawing on float images also works
-   cv3.rectangle(float_img, 20, 20, 80, 80, color=(1.0, 0.0, 0.0))
+   img_rect = cv3.rectangle(norm_img, 170, 20, 270, 120, color=(1.0, 0.0, 0.0))
 
 Handling Floating-Point Coordinates
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+cv3 functions support floating-point coordinates, which are automatically converted to integers. Coordinates between 0 and 1 are automatically detected as relative coordinates.
 
 .. code-block:: python
 
@@ -123,7 +130,12 @@ Handling Floating-Point Coordinates
 Unified Video Interface
 -----------------------
 
-cv3 provides a consistent interface for both video reading and writing through the ``cv3.Video`` class, with support for context managers and convenient properties.
+The video module provides classes and functions for reading and writing video files with automatic color space conversion and enhanced error handling through the ``cv3.Video`` factory function.
+
+Video Reading
+^^^^^^^^^^^^^
+
+Reading video files is straightforward with cv3. The Video class provides convenient properties for accessing video metadata.
 
 .. code-block:: python
 
@@ -136,7 +148,7 @@ cv3 provides a consistent interface for both video reading and writing through t
        print(f"Total frames: {len(reader)}")
        
        # Iterate through frames
-       for i, frame in enumerate(cv3.Video('input.mp4')):
+       for i, frame in enumerate(reader):
            if i < 5:  # Process first 5 frames
                processed = process_frame(frame)
                # Do something with processed frame
@@ -144,16 +156,35 @@ cv3 provides a consistent interface for both video reading and writing through t
        print(f"Video dimensions: {reader.width}x{reader.height}")
        print(f"Frame rate: {reader.fps}")
 
+Video Writing
+^^^^^^^^^^^^^
+
+Writing videos is equally simple. Note that width and height are initialized after writing the first frame, and subsequent frames are checked for dimension matching.
+
+.. code-block:: python
+
+   import cv3
+   
    # Writing video with context manager
-   with cv3.Video('output.mp4', 'w', fps=30) as writer:
+   with cv3.Video('output.mp4', 'w') as writer:
+       print(f"Output dimensions: {writer.width} x {writer.height}") # None x None
        # Write frames
+
        for frame in cv3.Video('input.mp4'):
            writer.write(frame)
        
        print(f"Output dimensions: {writer.width}x{writer.height}")
        print(f"Frame rate: {writer.fps}")
-       
 
+Using Video Streams Without Context Managers
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can also use video streams without context managers, but you'll need to manually release resources.
+
+.. code-block:: python
+
+   import cv3
+   
    # You can also use it without context manager
    reader = cv3.Video('input.mp4')
    writer = cv3.Video('output.mp4', 'w')
@@ -165,7 +196,7 @@ cv3 provides a consistent interface for both video reading and writing through t
 Video Reading Features
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-cv3.Video provides convenient features for video reading, including list comprehension
+The ``cv3.VideoCapture`` class (accessible through ``cv3.Video`` with mode='r', which is the default) provides convenient features for video reading, including list comprehension
 for processing all frames, frame indexing, and current frame access.
 
 .. code-block:: python
@@ -192,6 +223,43 @@ for processing all frames, frame indexing, and current frame access.
        
        # Get total number of frames
        total_frames = len(cap)
+
+Video Writing Features
+^^^^^^^^^^^^^^^^^^^^^^^
+
+The ``cv3.VideoWriter`` class (accessible through ``cv3.Video`` with mode='w') provides an enhanced interface for writing video files with customizable encoding parameters and automatic color space conversion.
+
+Key features of Video Writing:
+
+- **Automatic Initialization**: The underlying OpenCV VideoWriter stream is initialized only when the first frame is written, allowing for dynamic determination of video dimensions.
+- **Default Parameters**: By default, videos are written with 30 FPS and 'mp4v' codec (FOURCC), but these can be customized (see :func:`cv3.opt.video`)
+- **Shape Validation**: Ensures all frames written to the video have the same dimensions as the first frame.
+- **Automatic Directory Creation**: When ``mkdir=True`` is specified, parent directories are automatically created if they don't exist.
+- **Color Space Conversion**: Automatically converts RGB images to BGR format for writing (if ``cv3.opt.RGB`` is True, which is the default).
+
+.. code-block:: python
+
+   import cv3
+   
+   # Create a video writer with default settings (30 FPS, 'mp4v' codec)
+   writer = cv3.Video('output.mp4', 'w')
+   
+   # Create a video writer with custom FPS
+   writer = cv3.Video('output.mp4', 'w', fps=60)
+   
+   # Create a video writer with custom codec
+   writer = cv3.Video('output.mp4', 'w', fourcc='mp4v')
+   
+   # Create a video writer with automatic directory creation
+   writer = cv3.Video('output/video/result.mp4', 'w', mkdir=True)
+   
+   # Writing frames
+   frame = cv3.imread('image.jpg')
+   writer.write(frame)  # Stream is initialized here with frame dimensions
+   
+   # Using context manager for automatic resource cleanup
+   with cv3.Video('output.mp4', 'w') as writer:
+       writer.write(frame)
 
 File Path Handling and Automatic Directory Creation
 ----------------------------------------------------
@@ -271,7 +339,7 @@ cv3 drawing and cropping functions support multiple coordinate formats, making i
    cv3.rectangle(img, 25, 75, 30, 30, mode='ccwh')
    
    # Cropping with different modes
-   cropped1 = cv3.crop(img, 10, 10, 50, 50)  # xyxy
+   cropped1 = cv3.crop(img, 10, 10, 70, 70)  # xyxy
    cropped2 = cv3.crop(img, 10, 10, 40, 40, mode='xywh')  # xywh
 
 Drawing Functions
@@ -302,7 +370,7 @@ cv3 provides standard drawing functions like rectangle, circle, text, polylines,
 Drawing with Relative Coordinates
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Many cv3 drawing functions support relative coordinates through the ``rel=True`` parameter.
+Many cv3 drawing functions support relative coordinates. Coordinates between 0 and 1 are automatically detected as relative, but you can also explicitly set ``rel=True`` to force relative coordinate interpretation.
 
 .. code-block:: python
 
@@ -315,7 +383,7 @@ Many cv3 drawing functions support relative coordinates through the ``rel=True``
    cv3.rectangle(img, 0.1, 0.2, 0.4, 0.45, rel=True)
    
    # Draw text at 50% from left, 80% from top
-   cv3.text(img, "Hello World", 0.5, 0.8, rel=True, font_scale=1.5)
+   cv3.text(img, "Hello World", 0.5, 0.8, rel=True, scale=1.5)
 
 Fill Parameter
 ^^^^^^^^^^^^^^
@@ -371,6 +439,9 @@ cv3 provides flexible color handling in drawing functions. Available named color
    # RGB tuples
    cv3.rectangle(img, 10, 60, 50, 90, color=(0, 255, 0))  # Green
    
+   # RGB tuples with relative values (0.0 to 1.0)
+   cv3.rectangle(img, 60, 60, 90, 90, color=(0.0, 1.0, 1.0))  # Cyan
+   
    # Single value for grayscale
    gray_img = cv3.zeros(100, 100)
    cv3.rectangle(gray_img, 10, 10, 50, 50, color=128)  # Gray
@@ -411,7 +482,7 @@ cv3 provides more informative error messages compared to raw OpenCV, making it e
    try:
        img = cv3.zeros(100, 100, 3)
        cv3.imwrite('path/that/does/not/exist.jpg', img)
-   except FileNotFoundError as e:
+   except OSError as e:
        print(f"Clear error message: {e}")
        
    # OSError when file exists but cannot be read
