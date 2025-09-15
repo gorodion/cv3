@@ -54,11 +54,12 @@ __all__ = [
     'points',
     'line', 'hline', 'vline',
     'text', 'putText',
-    'rectangles',
+    'rectangles', 'rect', 'rects',
     'arrow',
     'ellipse',
     'marker',
     'getTextSize',
+    'poly', 'polygon',
     'COLORS'
 ]
 
@@ -536,9 +537,6 @@ def points(img: np.array, pts: List[List], r=None, rel=None, r_mode='min', color
         img = _point(img, *pt, r=r, rel=rel, r_mode=r_mode, color=color, copy=copy)
     return img
 
-# Alias for text function to match OpenCV naming convention
-putText = text
-
 
 def arrow(img, x0, y0, x1, y1, rel=None, color=None, t=None, line_type=None, tip_length=None, copy=False):
     """Draw an arrowed line on an image.
@@ -708,6 +706,14 @@ def getTextSize(text, font=None, scale=None, t=None):
     return _get_text_size(text, font=font, scale=scale, t=t)
 
 
-# Aliases for OpenCV compatibility
+# Aliases
 putText = text
-"""Alias for text function."""
+"""Alias for :func:`text`."""
+rect = rectangle
+"""Alias for :func:`rectangles`."""
+rects = rectangles
+"""Alias for :func:`rectangles`."""
+poly = polylines
+"""Alias for :func:`polylines`."""
+polygon = polylines
+"""Alias for :func:`polylines`."""

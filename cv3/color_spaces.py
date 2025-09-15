@@ -4,14 +4,25 @@ This module provides functions for converting between different color spaces
 commonly used in computer vision and image processing.
 
 Functions:
-    rgb, bgr: Convert between RGB and BGR color spaces.
-    rgba, bgra: Convert between RGBA and BGRA color spaces.
-    rgb2gray, bgr2gray: Convert color images to grayscale.
-    gray2rgb, gray2bgr: Convert grayscale images to color.
-    gray2rgba, gray2bgra: Convert grayscale images to color with alpha channel.
-    bgr2hsv, rgb2hsv: Convert color images to HSV color space.
-    hsv2bgr, hsv2rgb: Convert HSV images to color.
     cvt_color, cvtColor: Generic color space conversion function.
+    
+    rgb2bgr, bgr2rgb: Convert between RGB and BGR color spaces.
+    
+    rgba2bgra, bgra2rgba: Convert between RGBA and BGRA color spaces.
+    
+    rgb2gray, bgr2gray: Convert color images to grayscale.
+    
+    gray2rgb, gray2bgr: Convert grayscale images to color.
+    
+    gray2rgba, gray2bgra: Convert grayscale images to color with alpha channel.
+    
+    bgr2hsv, rgb2hsv: Convert color images to HSV color space.
+    
+    hsv2bgr, hsv2rgb: Convert HSV images to color.
+    
+    rgb, bgr: Aliases for rgb2bgr and bgr2rgb.
+    
+    rgba, bgra: Aliases for rgba2bgra and bgra2rgba.
 """
 from functools import partial
 import cv2
@@ -19,17 +30,15 @@ import numpy as np
 from ._utils import type_decorator
 
 __all__ = [
-    'rgb', 'bgr', 'rgb2bgr', 'bgr2rgb',
-    'rgba', 'bgra', 'rgba2bgra', 'bgra2rgba',
-    'rgb2gray',
-    'bgr2gray',
+    'cvt_color', 'cvtColor',
+    'rgb2bgr', 'bgr2rgb',
+    'rgba2bgra', 'bgra2rgba',
+    'rgb2gray', 'bgr2gray',
     'gray2rgb', 'gray2bgr',
     'gray2rgba', 'gray2bgra',
-    'bgr2hsv',
-    'rgb2hsv',
-    'hsv2bgr',
-    'hsv2rgb',
-    'cvt_color', 'cvtColor'
+    'bgr2hsv', 'rgb2hsv',
+    'hsv2bgr', 'hsv2rgb',
+    'rgb', 'bgr', 'rgba', 'bgra'
 ]
 
 
@@ -57,30 +66,6 @@ def cvt_color(img, code):
     return _cvt_color(img, code)
 
 
-def rgb(img):
-    """Convert image from BGR to RGB color space.
-    
-    Args:
-        img (numpy.ndarray): Input image in BGR format.
-        
-    Returns:
-        numpy.ndarray: Image in RGB format.
-    """
-    return cvt_color(img, cv2.COLOR_RGB2BGR)
-
-
-def bgr(img):
-    """Convert image from RGB to BGR color space.
-    
-    Args:
-        img (numpy.ndarray): Input image in RGB format.
-        
-    Returns:
-        numpy.ndarray: Image in BGR format.
-    """
-    return cvt_color(img, cv2.COLOR_RGB2BGR)
-
-
 def rgb2bgr(img):
     """Convert image from RGB to BGR color space.
     
@@ -103,30 +88,6 @@ def bgr2rgb(img):
         numpy.ndarray: Image in RGB format.
     """
     return cvt_color(img, cv2.COLOR_BGR2RGB)
-
-
-def rgba(img):
-    """Convert image from BGRA to RGBA color space.
-    
-    Args:
-        img (numpy.ndarray): Input image in BGRA format.
-        
-    Returns:
-        numpy.ndarray: Image in RGBA format.
-    """
-    return cvt_color(img, cv2.COLOR_BGRA2RGBA)
-
-
-def bgra(img):
-    """Convert image from RGBA to BGRA color space.
-    
-    Args:
-        img (numpy.ndarray): Input image in RGBA format.
-        
-    Returns:
-        numpy.ndarray: Image in BGRA format.
-    """
-    return cvt_color(img, cv2.COLOR_RGBA2BGRA)
 
 
 def rgba2bgra(img):
@@ -285,6 +246,14 @@ def hsv2rgb(img):
     return cvt_color(img, cv2.COLOR_HSV2RGB)
 
 
-# Aliases for OpenCV compatibility
+# Aliases
+rgb = rgb2bgr
+"""Alias for :func:`rgb2bgr`."""
+bgr = bgr2rgb
+"""Alias for :func:`bgr2rgb`."""
+rgba = rgba2bgra
+"""Alias for :func:`rgba2bgra`."""
+bgra = bgra2rgba
+"""Alias for :func:`bgra2rgba`."""
 cvtColor = cvt_color
-"""Alias for cvt_color function."""
+"""Alias for :func:`cvt_color`."""

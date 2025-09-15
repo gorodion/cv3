@@ -86,6 +86,7 @@ class VideoInterface:
         self.release()
 
     close = release
+    """Alias for :meth:`release`."""
 
 
 class VideoCapture(VideoInterface):
@@ -218,8 +219,9 @@ class VideoCapture(VideoInterface):
         return frame
 
     imread = read
+    """Alias for :meth:`read`."""
     seek = rewind
-    """Alias for read method."""
+    """Alias for :meth:`rewind`."""
 
 
 class VideoWriter(VideoInterface):
@@ -318,7 +320,7 @@ class VideoWriter(VideoInterface):
         self.stream.write(frame)
 
     imwrite = write
-    """Alias for write method."""
+    """Alias for :meth:`write`."""
 
 
 def Video(path, mode='r', **kwds):
@@ -359,4 +361,4 @@ def Video(path, mode='r', **kwds):
 
 
 VideoReader = VideoCapture
-"""Alias for VideoCapture class."""
+"""Alias for :class:`VideoCapture`."""

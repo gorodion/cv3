@@ -268,14 +268,14 @@ def random(*args):
     """
     return np.random.randint(0, 256, args, np.uint8)
 
-# Aliases for convenience
+# Aliases
 black = zeros
-"""Alias for :func:`zeros` function."""
+"""Alias for :func:`zeros`."""
 black_like = zeros_like
-"""Alias for :func:`zeros_like` function."""
+"""Alias for :func:`zeros_like`."""
 rand = random
-"""Alias for :func:`random` function."""
+"""Alias for :func:`random`."""
 randn = random
-"""Alias for :func:`random` function."""
+"""Alias for :func:`random`."""
 randint = random
-"""Alias for :func:`random` function."""
+"""Alias for :func:`random`."""
