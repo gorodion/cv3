@@ -18,8 +18,8 @@ Constants:
 import warnings
 import numpy as np
 
-from . import opt
-from .utils import rel2abs, xywh2xyxy, ccwh2xyxy, yyxx2xyxy
+from .. import opt
+from ..utils import rel2abs, xywh2xyxy, ccwh2xyxy, yyxx2xyxy
 
 warnings.simplefilter('always', UserWarning)
 

@@ -6,8 +6,8 @@ scaling, shifting, resizing, cropping, and padding.
 
 import cv2
 
-# Import internal functions from _transform
-from ._transform import (
+# Import internal functions from _private._transform
+from ._private._transform import (
     _vflip, _hflip, _dflip,
     _transform, _rotate, _scale,
     _shift, _xshift, _yshift,

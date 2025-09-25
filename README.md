@@ -68,6 +68,15 @@ for a comprehensive overview of all the improvements and additions that cv3 prov
 
 You can also get acquainted with the features in [demo.ipynb](https://github.com/gorodion/cv3/blob/main/demo.ipynb)
 
+## Requirements
+
+- Python 3.6+
+- opencv-python (or variants)
+
+## Documentation
+
+https://cv3.readthedocs.org/
+
 ## Run tests
 
 ```bash

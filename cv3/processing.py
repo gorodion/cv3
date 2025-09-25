@@ -8,17 +8,13 @@ Functions:
 """
 import cv2
 import numpy as np
-from ._utils import type_decorator, _relative_check, _relative_handle
-from . import opt
-from ._draw import _threshold_type_flag_match
+from ._private._processing import _threshold
 
 __all__ = [
     'threshold'
 ]
 
 
-
-@type_decorator
 def threshold(img: np.ndarray, thr=127, max=None, type=None, rel=None):
     """Apply threshold to a grayscale image.
     
@@ -58,25 +54,5 @@ def threshold(img: np.ndarray, thr=127, max=None, type=None, rel=None):
         >>> # Apply threshold with relative threshold value
         >>> thresh = cv3.threshold(img, 0.5, rel=True)
     """
-    assert img.ndim == 2, '`img` must be gray image'
-    
-    # Handle max value
-    if max is None:
-        max = 255
-    # Handle threshold type
-    if type is None:
-        type = opt.THRESHOLD_TYPE
-    elif isinstance(type, str):
-        type = _threshold_type_flag_match(type)
-    else:
-        # Validate flag type
-        from ._draw import _THRESHOLD_TYPE_DICT
-        assert type in _THRESHOLD_TYPE_DICT.values(), 'invalid threshold type flag: {}'.format(type)
-    
-    # Handle relative threshold value
-    if _relative_check(thr, rel=rel):
-        thr = thr * img.max()
-    
-    _, thresh = cv2.threshold(img, thr, max, type)
-    return thresh
+    return _threshold(img, thr=thr, max=max, type=type, rel=rel)
 
