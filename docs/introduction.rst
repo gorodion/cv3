@@ -72,3 +72,9 @@ Quick Start
 
 This is just a small example of what cv3 can do. Check out the :doc:`core_concepts` page for
 a comprehensive overview of all the improvements and additions that cv3 provides over raw OpenCV.
+
+Requirements
+------------
+
+- Python 3.6+
+- opencv-python (or variants)

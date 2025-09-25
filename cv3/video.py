@@ -23,7 +23,7 @@ from typing import Union
 
 from . import opt
 from .color_spaces import rgb
-from ._utils import typeit
+from ._private._utils import typeit
 
 __all__ = [
     'VideoCapture',

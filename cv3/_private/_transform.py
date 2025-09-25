@@ -11,7 +11,7 @@ import warnings
 from functools import partial
 
 from ._utils import type_decorator, _relative_check, _relative_handle, _process_color, _handle_rect_coords
-from .utils import xywh2xyxy, ccwh2xyxy, yyxx2xyxy
+from ..utils import xywh2xyxy, ccwh2xyxy, yyxx2xyxy
 
 # Interpolation methods dictionary
 _INTER_DICT = {

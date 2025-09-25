@@ -29,7 +29,7 @@ import numpy as np
 from typing import List
 
 from . import opt
-from ._draw import (
+from ._private._draw import (
     _rectangle,
     _polylines,
     _fill_poly,
@@ -42,7 +42,8 @@ from ._draw import (
     _arrowed_line,
     _ellipse,
     _marker,
-    _get_text_size
+    _get_text_size,
+    COLORS
 )
 
 __all__ = [
@@ -62,10 +63,6 @@ __all__ = [
     'poly', 'polygon',
     'COLORS'
 ]
-
-# Import COLORS from the internal module
-from ._draw import COLORS
-
 
 def rectangle(img, x0, y0, x1, y1, mode='xyxy', rel=None, color=None, t=None, line_type=None, fill=None, copy=False):
     """Draw a rectangle on an image.
@@ -428,22 +425,15 @@ def text(img, text_str, x=0.5, y=0.5, font=None, scale=None, flip=False, rel=Non
     return _text(img, text_str, x=x, y=y, rel=rel, color=color, copy=copy, t=t, line_type=line_type, scale=scale, font=font, flip=flip)
 
 
-def rectangles(img: np.array, rects: List[List], mode='xyxy', rel=None, color=None, t=None, line_type=None, fill=None, copy=False) -> np.array:
-    """Draw multiple rectangles on an image.
+def rectangles(img: np.array, rects: List[List], *args, **kwargs) -> np.array:
+    """Draw multiple rectangles on an image. See :func:`rectangle` for more details.
 
     Args:
         img (numpy.ndarray): Input image to draw on.
         rects (List[List]): List of rectangles, where each rectangle is a list
             of parameters to pass to the rectangle function.
-        mode (str, optional): Coordinate mode. One of 'xyxy', 'xywh', 'ccwh'. Defaults to 'xyxy'.
-        rel (bool, optional): Whether to use relative coordinates. Defaults to None.
-        color: Color of the rectangles (default: opt.COLOR).
-        t: Thickness of the rectangle lines (default: opt.THICKNESS).
-        line_type: Type of line for drawing (default: opt.LINE_TYPE).
-        fill (bool, optional): Whether to fill the rectangles. If True, draws filled rectangles
-            regardless of thickness. If False, draws outlined rectangles. If None, uses
-            the thickness parameter to determine fill behavior. Defaults to None.
-        copy (bool): Whether to copy the image before drawing (default: False).
+        *args: Additional arguments to pass to the :func:`rectangle` function.
+        **kwargs: Additional keyword arguments to pass to the :func:`rectangle` function.
 
     Returns:
         numpy.ndarray: Image with all rectangles drawn on it.
@@ -482,28 +472,19 @@ def rectangles(img: np.array, rects: List[List], mode='xyxy', rel=None, color=No
         >>> img = cv3.rectangles(img, filled_rectangles, color='blue', fill=True)
     """
     for rect in rects:
-        img = rectangle(img, *rect, color=color, t=t, line_type=line_type, fill=fill, copy=copy, mode=mode, rel=rel)
+        img = rectangle(img, *rect, *args, **kwargs)
     return img
 
 
-def points(img: np.array, pts: List[List], r=None, rel=None, r_mode='min', color=None, copy=False) -> np.array:
-    """Draw multiple points on an image.
+def points(img: np.array, pts: List[List], *args, **kwargs) -> np.array:
+    """Draw multiple points on an image. See :func:`point` for more details.
 
     Args:
         img (numpy.ndarray): Input image to draw on.
         pts (List[List]): List of points, where each point is a list
             of parameters to pass to the point function.
-        r (int or float, optional): Radius of the points. Defaults to opt.PT_RADIUS.
-        rel (bool, optional): Whether to use relative coordinates. Defaults to None.
-        r_mode (str, optional): Mode for relative radius calculation. One of 'w', 'h', 'min', 'max', 'diag'.
-            Only used when rel=True for the radius. Defaults to 'min'.
-            - 'w': Relative to image width
-            - 'h': Relative to image height
-            - 'min': Relative to minimum of width and height
-            - 'max': Relative to maximum of width and height
-            - 'diag': Relative to image diagonal
-        color: Color of the points (default: opt.COLOR).
-        copy (bool): Whether to copy the image before drawing (default: False).
+        *args: Additional arguments to pass to the :func:`point` function.
+        **kwargs: Additional keyword arguments to pass to the :func:`point` function.
 
     Returns:
         numpy.ndarray: Image with all points drawn on it.
@@ -534,7 +515,7 @@ def points(img: np.array, pts: List[List], r=None, rel=None, r_mode='min', color
         >>> img = cv3.points(img, points, r=0.1, rel=True, r_mode='w', color='blue')
     """
     for pt in pts:
-        img = _point(img, *pt, r=r, rel=rel, r_mode=r_mode, color=color, copy=copy)
+        img = _point(img, *pt, *args, **kwargs)
     return img
 
 

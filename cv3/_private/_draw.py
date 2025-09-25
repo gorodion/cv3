@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from typing import List
 
-from . import opt
+from .. import opt
 from ._utils import (
     type_decorator,
     _relative_check,

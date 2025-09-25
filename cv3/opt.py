@@ -96,8 +96,8 @@ def draw(thickness=None, color=None, font=None, pt_radius=None, scale=None, line
         assert isinstance(color, (str, int, float, np.unsignedinteger, np.floating, np.ndarray, list, tuple))
         COLOR = color
     if font is not None:
-        # Import font values from _draw.py
-        from ._draw import _FONTS_DICT
+        # Import font values from _private._draw.py
+        from ._private._draw import _FONTS_DICT
         assert font in _FONTS_DICT.values(), 'invalid font type'
         FONT = font
     if pt_radius is not None:
@@ -109,8 +109,8 @@ def draw(thickness=None, color=None, font=None, pt_radius=None, scale=None, line
         assert scale > 0, 'default scale must be positive'
         SCALE = scale
     if line_type is not None:
-        # Import line type values from _draw.py
-        from ._draw import _LINE_TYPE_DICT
+        # Import line type values from _private._draw.py
+        from ._private._draw import _LINE_TYPE_DICT
         assert line_type in _LINE_TYPE_DICT.values(), 'invalid line type'
         LINE_TYPE = line_type
 
