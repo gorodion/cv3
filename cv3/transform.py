@@ -6,14 +6,12 @@ scaling, shifting, resizing, cropping, and padding.
 
 import cv2
 
-# Import internal functions from _transform
-from ._transform import (
+# Import internal functions from _private._transform
+from ._private._transform import (
     _vflip, _hflip, _dflip,
     _transform, _rotate, _scale,
     _shift, _xshift, _yshift,
-    _resize, _crop, _pad,
-    _translate, _xtranslate, _ytranslate,
-    _copyMakeBorder
+    _resize, _crop, _pad
 )
 
 __all__ = [
@@ -285,7 +283,7 @@ def resize(img, width, height, inter=cv2.INTER_LINEAR, rel=None):
     return _resize(img, width, height, inter=inter, rel=rel)
 
 
-def crop(img, x0, y0, x1, y1, mode='xyxy', rel=None):
+def crop(img, x0, y0, x1, y1, mode='xyxy', rel=None, copy=True):
     """Crop image to specified rectangle.
     
     Args:
@@ -293,6 +291,7 @@ def crop(img, x0, y0, x1, y1, mode='xyxy', rel=None):
         x0, y0, x1, y1 (int or float): Rectangle coordinates.
         mode (str, optional): Coordinate mode. Can be 'xyxy', 'xywh', 'ccwh'. Defaults to 'xyxy'.
         rel (bool, optional): Whether to interpret coordinates as relative values. Defaults to None.
+        copy (bool, optional): Whether to return a copy of the cropped region. Defaults to True.
         
     Returns:
         numpy.ndarray: Cropped image.
@@ -305,8 +304,10 @@ def crop(img, x0, y0, x1, y1, mode='xyxy', rel=None):
         >>> img[:, :] = [255, 255, 255]  # White image
         >>> # Crop to 50x50 square in the center
         >>> cropped = cv3.crop(img, 25, 25, 75, 75)
+        >>> # Crop without copying the data
+        >>> cropped_view = cv3.crop(img, 25, 25, 75, 75, copy=False)
     """
-    return _crop(img, x0, y0, x1, y1, mode=mode, rel=rel)
+    return _crop(img, x0, y0, x1, y1, mode=mode, rel=rel, copy=copy)
 
 
 def pad(img, y0, y1, x0, x1, border=cv2.BORDER_CONSTANT, value=None, rel=None):
@@ -335,85 +336,6 @@ def pad(img, y0, y1, x0, x1, border=cv2.BORDER_CONSTANT, value=None, rel=None):
         >>> padded = cv3.pad(img, 10, 10, 10, 10, value=[128, 128, 0])
     """
     return _pad(img, y0, y1, x0, x1, border=border, value=value, rel=rel)
-
-
-def translate(img, x, y, border=cv2.BORDER_CONSTANT, value=None, rel=None):
-    """Translate image by x and y pixels (alias for shift).
-    
-    Args:
-        img (numpy.ndarray): Input image.
-        x (int or float): Shift in x direction.
-        y (int or float): Shift in y direction.
-        border (int or str, optional): Border type. Can be one of: 'constant', 'replicate',
-            'reflect', 'wrap', 'default' or OpenCV flags. Defaults to cv2.BORDER_CONSTANT.
-        value: Border color value for constant border type. Defaults to None.
-        rel (bool, optional): Whether to interpret x and y as relative values. Defaults to None.
-        
-    Returns:
-        numpy.ndarray: Translated image.
-        
-    Example:
-        >>> import cv3
-        >>> import numpy as np
-        >>> # Create a simple image
-        >>> img = np.zeros((100, 100, 3), dtype=np.uint8)
-        >>> img[25:75, 25:75] = [255, 255, 255]  # White square
-        >>> # Translate by 10 pixels in x and 20 pixels in y
-        >>> translated = cv3.translate(img, 10, 20)
-    """
-    return _translate(img, x, y, border=border, value=value, rel=rel)
-
-
-def xtranslate(img, x, border=cv2.BORDER_CONSTANT, value=None, rel=None):
-    """Translate image horizontally by x pixels (alias for xshift).
-    
-    Args:
-        img (numpy.ndarray): Input image.
-        x (int or float): Shift in x direction.
-        border (int or str, optional): Border type. Can be one of: 'constant', 'replicate',
-            'reflect', 'wrap', 'default' or OpenCV flags. Defaults to cv2.BORDER_CONSTANT.
-        value: Border color value for constant border type. Defaults to None.
-        rel (bool, optional): Whether to interpret x as relative value. Defaults to None.
-        
-    Returns:
-        numpy.ndarray: Horizontally translated image.
-        
-    Example:
-        >>> import cv3
-        >>> import numpy as np
-        >>> # Create a simple image
-        >>> img = np.zeros((100, 100, 3), dtype=np.uint8)
-        >>> img[25:75, 25:75] = [255, 255, 255]  # White square
-        >>> # Translate by 10 pixels in x direction
-        >>> translated = cv3.xtranslate(img, 10)
-    """
-    return _xtranslate(img, x, border=border, value=value, rel=rel)
-
-
-def ytranslate(img, y, border=cv2.BORDER_CONSTANT, value=None, rel=None):
-    """Translate image vertically by y pixels (alias for yshift).
-    
-    Args:
-        img (numpy.ndarray): Input image.
-        y (int or float): Shift in y direction.
-        border (int or str, optional): Border type. Can be one of: 'constant', 'replicate',
-            'reflect', 'wrap', 'default' or OpenCV flags. Defaults to cv2.BORDER_CONSTANT.
-        value: Border color value for constant border type. Defaults to None.
-        rel (bool, optional): Whether to interpret y as relative value. Defaults to None.
-        
-    Returns:
-        numpy.ndarray: Vertically translated image.
-        
-    Example:
-        >>> import cv3
-        >>> import numpy as np
-        >>> # Create a simple image
-        >>> img = np.zeros((100, 100, 3), dtype=np.uint8)
-        >>> img[25:75, 25:75] = [255, 255, 255]  # White square
-        >>> # Translate by 10 pixels in y direction
-        >>> translated = cv3.ytranslate(img, 10)
-    """
-    return _ytranslate(img, y, border=border, value=value, rel=rel)
 
 
 def rotate90(img, inter=cv2.INTER_LINEAR, border=cv2.BORDER_CONSTANT, value=None):
@@ -493,30 +415,13 @@ def rotate270(img, inter=cv2.INTER_LINEAR, border=cv2.BORDER_CONSTANT, value=Non
     """
     return _rotate(img, 270, inter=inter, border=border, value=value)
 
+# Aliases
+translate = shift
+"""Alias for :func:`shift`."""
+xtranslate = xshift
+"""Alias for :func:`xshift`."""
+ytranslate = yshift
+"""Alias for :func:`yshift`."""
+copyMakeBorder = pad
+"""Alias for :func:`pad`."""
 
-def copyMakeBorder(img, y0, y1, x0, x1, border=cv2.BORDER_CONSTANT, value=None, rel=None):
-    """Pad image with specified borders (alias for pad).
-    
-    Args:
-        img (numpy.ndarray): Input image.
-        y0, y1, x0, x1 (int or float): Padding values for each side.
-        border (int or str, optional): Border type. Can be one of: 'constant', 'replicate',
-            'reflect', 'wrap', 'default' or OpenCV flags. Defaults to cv2.BORDER_CONSTANT.
-        value: Border color value for constant border type. Defaults to None.
-        rel (bool, optional): Whether to interpret padding values as relative. Defaults to None.
-        
-    Returns:
-        numpy.ndarray: Padded image.
-        
-    Example:
-        >>> import cv3
-        >>> import numpy as np
-        >>> # Create a simple image
-        >>> img = np.zeros((100, 100, 3), dtype=np.uint8)
-        >>> img[25:75, 25:75] = [255, 255, 255]  # White square
-        >>> # Pad with 10 pixels on each side
-        >>> padded = cv3.copyMakeBorder(img, 10, 10, 10, 10)
-        >>> # Pad with custom border color
-        >>> padded = cv3.copyMakeBorder(img, 10, 10, 10, 10, value='green')
-    """
-    return _copyMakeBorder(img, y0, y1, x0, x1, border=border, value=value, rel=rel)

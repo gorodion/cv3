@@ -18,8 +18,8 @@ Constants:
 import warnings
 import numpy as np
 
-from . import opt
-from .utils import rel2abs, xywh2xyxy, ccwh2xyxy, yyxx2xyxy
+from .. import opt
+from ..utils import rel2abs, xywh2xyxy, ccwh2xyxy, yyxx2xyxy
 
 warnings.simplefilter('always', UserWarning)
 
@@ -35,10 +35,17 @@ def typeit(img):
         
     Note:
         If the image is already of type uint8, it is returned as is.
+        If the image is a float array with values in range [0, 1], it is scaled by 255 before casting.
         Otherwise, a warning is issued and the image is cast to uint8.
     """
     if isinstance(img, np.ndarray) and img.dtype == np.uint8:
         return img
+    # Check if image is a float array with values in range [0, 1]
+    if isinstance(img, np.ndarray) and np.issubdtype(img.dtype, np.floating):
+        # Check if min and max values are in range [0, 1]
+        if img.size > 0 and np.min(img) >= 0 and np.max(img) <= 1:
+            # Scale by 255 before casting to uint8
+            img = img * 255
     warnings.warn('The image was copied because it needs to be cast to the correct type. To avoid copying, please cast the image to np.uint8')
     return np.uint8(img)
 

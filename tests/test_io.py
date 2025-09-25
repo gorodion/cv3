@@ -21,8 +21,8 @@ import time
 
 # NOTE: RGB==True by default
 
-TEST_IMG = 'img.jpeg'
-TEST_ALPHA_IMG = 'parrot.webp'
+TEST_IMG = 'data/image.jpg'
+TEST_ALPHA_IMG = 'data/parrot.webp'
 NON_EXIST_IMG = 'spamimage.jpg'
 OUT_PATH_IMG = 'img_out.png'
 UTF8_PATH = 'попугай.png'

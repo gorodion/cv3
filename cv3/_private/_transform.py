@@ -11,7 +11,7 @@ import warnings
 from functools import partial
 
 from ._utils import type_decorator, _relative_check, _relative_handle, _process_color, _handle_rect_coords
-from .utils import xywh2xyxy, ccwh2xyxy, yyxx2xyxy
+from ..utils import xywh2xyxy, ccwh2xyxy, yyxx2xyxy
 
 # Interpolation methods dictionary
 _INTER_DICT = {
@@ -215,7 +215,7 @@ def _xshift(img, x, border=cv2.BORDER_CONSTANT, value=None, rel=None):
     """
     h, w = img.shape[:2]
     x = round(x * w if _relative_check(x, rel=rel) else x)
-    return _translate(img, x, 0, border=border, value=value)
+    return _shift(img, x, 0, border=border, value=value, rel=False)
 
 
 def _yshift(img, y, border=cv2.BORDER_CONSTANT, value=None, rel=None):
@@ -233,7 +233,7 @@ def _yshift(img, y, border=cv2.BORDER_CONSTANT, value=None, rel=None):
     """
     h, w = img.shape[:2]
     y = round(y * h if _relative_check(y, rel=rel) else y)
-    return _translate(img, 0, y, border=border, value=value)
+    return _shift(img, 0, y, border=border, value=value, rel=False)
 
 
 @type_decorator
@@ -264,7 +264,7 @@ def _resize(img, width, height, inter=cv2.INTER_LINEAR, rel=None):
 
 
 @type_decorator
-def _crop(img, x0, y0, x1, y1, mode='xyxy', rel=None):
+def _crop(img, x0, y0, x1, y1, mode='xyxy', rel=None, copy=True):
     """Crop image to specified rectangle.
     
     Args:
@@ -272,6 +272,7 @@ def _crop(img, x0, y0, x1, y1, mode='xyxy', rel=None):
         x0, y0, x1, y1 (int or float): Rectangle coordinates.
         mode (str, optional): Coordinate mode. Defaults to 'xyxy'.
         rel (bool, optional): Whether to interpret coordinates as relative values. Defaults to None.
+        copy (bool, optional): Whether to return a copy of the cropped region. Defaults to True.
         
     Returns:
         numpy.ndarray: Cropped image.
@@ -287,7 +288,7 @@ def _crop(img, x0, y0, x1, y1, mode='xyxy', rel=None):
     if y1 == y0 or x1 == x0:
         if not rel:
             warnings.warn('zero-size array. Try to set `rel` to True')
-    return img[y0:y1, x0:x1].copy()
+    return img[y0:y1, x0:x1].copy() if copy else img[y0:y1, x0:x1]
 
 
 @type_decorator
@@ -308,9 +309,3 @@ def _pad(img, y0, y1, x0, x1, border=cv2.BORDER_CONSTANT, value=None, rel=None):
     x0, y0, x1, y1 = _relative_handle(img, x0, y0, x1, y1, rel=rel)
     return cv2.copyMakeBorder(img, y0, y1, x0, x1, borderType=border, value=value)
 
-
-# Aliases for internal use
-_translate = _shift
-_xtranslate = _xshift
-_ytranslate = _yshift
-_copyMakeBorder = _pad

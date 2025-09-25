@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='cv3',
-    version='1.3.1',
+    version='1.3.2',
     packages=['cv3'],
     url='https://github.com/gorodion/cv3',
     license='Apache 2.0',

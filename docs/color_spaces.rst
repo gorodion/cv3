@@ -13,12 +13,10 @@ commonly used in computer vision and image processing.
    :toctree: generated/
    :template: function.rst
    
-   rgb
-   bgr
+   cvt_color
+   cvtColor
    rgb2bgr
    bgr2rgb
-   rgba
-   bgra
    rgba2bgra
    bgra2rgba
    rgb2gray
@@ -31,5 +29,7 @@ commonly used in computer vision and image processing.
    rgb2hsv
    hsv2bgr
    hsv2rgb
-   cvt_color
-   cvtColor
+   rgb
+   bgr
+   rgba
+   bgra

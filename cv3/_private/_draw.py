@@ -1,35 +1,8 @@
-"""Internal drawing functions for cv3.
-
-This module contains internal drawing functions used by the public draw.py module.
-These functions are not meant to be used directly by users, but rather through
-the wrapper functions in draw.py which provide a more user-friendly interface.
-
-Functions:
-    _rectangle: Draw a rectangle on an image.
-    _polylines: Draw connected line segments on an image.
-    _fill_poly: Draw a filled polygon on an image.
-    _circle: Draw a circle on an image.
-    _line: Draw a line on an image.
-    _hline: Draw a horizontal line on an image.
-    _vline: Draw a vertical line on an image.
-    _text: Draw text on an image.
-    _rectangles: Draw multiple rectangles on an image.
-    _points: Draw multiple points on an image.
-    _arrowed_line: Draw an arrowed line on an image.
-    _ellipse: Draw an ellipse on an image.
-    _marker: Draw a marker on an image.
-    _get_text_size: Calculate the size of a text string.
-
-Constants:
-    COLORS: List of named colors available for use in drawing functions.
-    _LINE_TYPE_DICT: Dictionary mapping line type names to OpenCV constants.
-    _FONTS_DICT: Dictionary mapping font names to OpenCV constants.
-"""
 import cv2
 import numpy as np
 from typing import List
 
-from . import opt
+from .. import opt
 from ._utils import (
     type_decorator,
     _relative_check,
@@ -95,39 +68,42 @@ def _handle_poly_pts(img, pts, rel=None):
 
 def _draw_decorator(func):
     @type_decorator
-    def wrapper(img, *args, color=None, line_type=None, copy=False, **kwargs):
+    def wrapper(img, *args, color=None, copy=False, fill=None, **kwargs):
         if copy:
             img = img.copy()
 
         color = _process_color(color)
 
-        # Handle line_type parameter
+        line_type = kwargs.get('line_type')
         if line_type is None:
             line_type = opt.LINE_TYPE
         elif isinstance(line_type, str):
             line_type = _line_type_flag_match(line_type)
-
-        kwargs['t'] = round(kwargs.get('t', opt.THICKNESS))
         kwargs['line_type'] = line_type
 
+        t = kwargs.get('t')
+        if fill is True:
+            if t is not None and t > 0:
+                raise ValueError("Cannot specify fill=True and t>0. Use either fill=True for filled shapes or t>0 for outlined shapes.")
+            t = cv2.FILLED
+        else:
+            if fill is False and t is not None and t == -1:
+                raise ValueError("Cannot specify fill=False and t=-1. Use either fill=False or t>0 for outlined shapes.")
+                
+        if t is None:
+            t = opt.THICKNESS
+        t = round(t)
+        kwargs['t'] = t
+        
         return func(img, *args, color=color, **kwargs)
 
     return wrapper
 
 
 @_draw_decorator
-def _rectangle(img, x0, y0, x1, y1, mode='xyxy', rel=None, fill=None, **kwargs):
+def _rectangle(img, x0, y0, x1, y1, mode='xyxy', rel=None, **kwargs):
     x0, y0, x1, y1 = _handle_rect_coords(img, x0, y0, x1, y1, mode=mode, rel=rel)
-    # Handle fill parameter and validation
-    if fill is True:
-        thickness = cv2.FILLED
-    elif fill is False and kwargs['t'] == -1:
-        raise ValueError("Cannot specify fill=False and t=-1. Use either fill=False or t>0 for outlined rectangles.")
-    elif fill is None:
-        thickness = kwargs['t']
-    else:
-        thickness = kwargs['t']
-    cv2.rectangle(img, (x0, y0), (x1, y1), kwargs['color'], thickness, lineType=kwargs['line_type'])
+    cv2.rectangle(img, (x0, y0), (x1, y1), kwargs['color'], kwargs['t'], lineType=kwargs['line_type'])
     return img
 
 
@@ -145,20 +121,40 @@ def _fill_poly(img, pts, rel=None, **kwargs):
     return img
 
 
-@_draw_decorator
-def _circle(img, x0, y0, r, rel=None, fill=None, **kwargs):
-    x0, y0 = _relative_handle(img, x0, y0, rel=rel)
-    r = round(r)
-    # Handle fill parameter and validation
-    if fill is True:
-        thickness = cv2.FILLED
-    elif fill is False and kwargs['t'] == -1:
-        raise ValueError("Cannot specify fill=False and t=-1. Use either fill=False or t>0 for outlined circles.")
-    elif fill is None:
-        thickness = kwargs['t']
+def _radius_relative_handle(img, r, rel, r_mode):
+    """Convert relative radius to absolute radius.
+    
+    Args:
+        img (numpy.ndarray): Input image used to determine dimensions for relative radius.
+        r (float): Radius value.
+        rel (bool): Relative flag.
+        r_mode (str): Mode for relative radius calculation. One of 'w', 'h', 'min', 'max', 'diag'.
+        
+    Returns:
+        int: Absolute radius as integer.
+    """
+    if not _relative_check(r, rel=rel):
+        return round(r)
+    
+    h, w = img.shape[:2]
+    if r_mode == 'w':
+        return round(r * w)
+    elif r_mode == 'h':
+        return round(r * h)
+    elif r_mode == 'min':
+        return round(r * min(w, h))
+    elif r_mode == 'max':
+        return round(r * max(w, h))
+    elif r_mode == 'diag':
+        return round(r * (w**2 + h**2)**0.5)
     else:
-        thickness = kwargs['t']
-    cv2.circle(img, (x0, y0), r, kwargs['color'], thickness, lineType=kwargs['line_type'])
+        raise ValueError("r_mode must be one of 'w', 'h', 'min', 'max', 'diag'")
+
+@_draw_decorator
+def _circle(img, x0, y0, r, rel=None, r_mode='min', **kwargs):
+    x0, y0 = _relative_handle(img, x0, y0, rel=rel)
+    r = _radius_relative_handle(img, r, rel=rel, r_mode=r_mode)
+    cv2.circle(img, (x0, y0), r, kwargs['color'], kwargs['t'], lineType=kwargs['line_type'])
     return img
 
 
@@ -207,39 +203,6 @@ def _text(img, text, x=0.5, y=0.5, font=None, scale=None, flip=False, rel=None, 
     return img
 
 
-@type_decorator
-def _rectangles(img, rects: List[List], color=None, t=None, line_type=None, fill=None, copy=False) -> np.array:
-    kwargs = {}
-    if color is not None:
-        kwargs['color'] = color
-    if t is not None:
-        kwargs['t'] = t
-    if line_type is not None:
-        kwargs['line_type'] = line_type
-    if fill is not None:
-        kwargs['fill'] = fill
-    if copy:
-        kwargs['copy'] = copy
-    for rect in rects:
-        img = _rectangle(img, *rect, **kwargs)
-    return img
-
-
-@type_decorator
-def _points(img: np.array, pts: List[List], color=None, r=None, copy=False) -> np.array:
-    kwargs = {}
-    if color is not None:
-        kwargs['color'] = color
-    if copy:
-        kwargs['copy'] = copy
-    # Handle the radius parameter specially since _circle expects it as a positional arg
-    if r is None:
-        r = opt.PT_RADIUS
-    for pt in pts:
-        img = _circle(img, pt[0], pt[1], r, t=-1, **kwargs)
-    return img
-
-
 @_draw_decorator
 def _arrowed_line(img, x0, y0, x1, y1, rel=None, tip_length=None, **kwargs):
     x0, y0, x1, y1 = _relative_handle(img, x0, y0, x1, y1, rel=rel)
@@ -249,19 +212,10 @@ def _arrowed_line(img, x0, y0, x1, y1, rel=None, tip_length=None, **kwargs):
 
 
 @_draw_decorator
-def _ellipse(img, x, y, axes_x, axes_y, angle=0, start_angle=0, end_angle=360, rel=None, fill=None, **kwargs):
+def _ellipse(img, x, y, axes_x, axes_y, angle=0, start_angle=0, end_angle=360, rel=None, **kwargs):
     x, y, axes_x, axes_y = _relative_handle(img, x, y, axes_x, axes_y, rel=rel)
     axes_x, axes_y = round(axes_x), round(axes_y)
-    # Handle fill parameter and validation
-    if fill is True:
-        thickness = cv2.FILLED
-    elif fill is False and kwargs['t'] == -1:
-        raise ValueError("Cannot specify fill=False and t=-1. Use either fill=False or t>0 for outlined ellipses.")
-    elif fill is None:
-        thickness = kwargs['t']
-    else:
-        thickness = kwargs['t']
-    cv2.ellipse(img, (x, y), (axes_x, axes_y), angle, start_angle, end_angle, kwargs['color'], thickness, lineType=kwargs['line_type'])
+    cv2.ellipse(img, (x, y), (axes_x, axes_y), angle, start_angle, end_angle, kwargs['color'], kwargs['t'], lineType=kwargs['line_type'])
     return img
 
 
@@ -274,6 +228,14 @@ def _marker(img, x, y, marker_type=None, marker_size=None, rel=None, **kwargs):
         marker_type = _marker_flag_match(marker_type)
     cv2.drawMarker(img, (x, y), kwargs['color'], markerType=marker_type, markerSize=marker_size, thickness=kwargs['t'], line_type=kwargs['line_type'])
     return img
+
+
+@_draw_decorator
+def _point(img, x0, y0, r=None, rel=None, r_mode='min', **kwargs):
+    if r is None:
+        r = opt.PT_RADIUS
+    kwargs['t'] = -1  # Points are always filled
+    return _circle(img, x0, y0, r, rel=rel, r_mode=r_mode, **kwargs)
 
 
 def _marker_flag_match(flag):

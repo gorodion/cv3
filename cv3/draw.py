@@ -23,28 +23,27 @@ Functions:
 
 Constants:
     COLORS: List of named colors available for use in drawing functions.
-    putText: Alias for the text function.
 """
 import warnings
 import numpy as np
 from typing import List
 
 from . import opt
-from ._draw import (
+from ._private._draw import (
     _rectangle,
     _polylines,
     _fill_poly,
     _circle,
+    _point,
     _line,
     _hline,
     _vline,
     _text,
-    _rectangles,
-    _points,
     _arrowed_line,
     _ellipse,
     _marker,
-    _get_text_size
+    _get_text_size,
+    COLORS
 )
 
 __all__ = [
@@ -56,17 +55,14 @@ __all__ = [
     'points',
     'line', 'hline', 'vline',
     'text', 'putText',
-    'rectangles',
+    'rectangles', 'rect', 'rects',
     'arrow',
     'ellipse',
     'marker',
     'getTextSize',
+    'poly', 'polygon',
     'COLORS'
 ]
-
-# Import COLORS from the internal module
-from ._draw import COLORS
-
 
 def rectangle(img, x0, y0, x1, y1, mode='xyxy', rel=None, color=None, t=None, line_type=None, fill=None, copy=False):
     """Draw a rectangle on an image.
@@ -115,14 +111,7 @@ def rectangle(img, x0, y0, x1, y1, mode='xyxy', rel=None, color=None, t=None, li
         >>> # Draw a rectangle using xywh mode
         >>> img = cv3.rectangle(img, 10, 10, 80, 80, mode='xywh', color='yellow')
     """
-    kwargs = {}
-    if t is not None:
-        kwargs['t'] = t
-    if line_type is not None:
-        kwargs['line_type'] = line_type
-    if fill is not None:
-        kwargs['fill'] = fill
-    return _rectangle(img, x0, y0, x1, y1, mode=mode, rel=rel, color=color, copy=copy, **kwargs)
+    return _rectangle(img, x0, y0, x1, y1, mode=mode, rel=rel, color=color, copy=copy, t=t, line_type=line_type, fill=fill)
 
 
 def polylines(img, pts, is_closed=False, rel=None, color=None, t=None, line_type=None, copy=False):
@@ -163,12 +152,7 @@ def polylines(img, pts, is_closed=False, rel=None, color=None, t=None, line_type
         >>> # Draw closed polylines
         >>> img = cv3.polylines(img, points, is_closed=True, color='blue')
     """
-    kwargs = {}
-    if t is not None:
-        kwargs['t'] = t
-    if line_type is not None:
-        kwargs['line_type'] = line_type
-    return _polylines(img, pts, is_closed=is_closed, rel=rel, color=color, copy=copy, **kwargs)
+    return _polylines(img, pts, is_closed=is_closed, rel=rel, color=color, copy=copy, t=t, line_type=line_type)
 
 
 def fill_poly(img, pts, rel=None, color=None, copy=False):
@@ -206,7 +190,7 @@ def fill_poly(img, pts, rel=None, color=None, copy=False):
     return _fill_poly(img, pts, rel=rel, color=color, copy=copy)
 
 
-def circle(img, x0, y0, r, rel=None, color=None, t=None, line_type=None, fill=None, copy=False):
+def circle(img, x0, y0, r, rel=None, r_mode='min', color=None, t=None, line_type=None, fill=None, copy=False):
     """Draw a circle on an image.
 
     Args:
@@ -215,6 +199,13 @@ def circle(img, x0, y0, r, rel=None, color=None, t=None, line_type=None, fill=No
         y0 (int or float): Y-coordinate of the circle center.
         r (int or float): Radius of the circle.
         rel (bool, optional): Whether to use relative coordinates. Defaults to None.
+        r_mode (str, optional): Mode for relative radius calculation. One of 'w', 'h', 'min', 'max', 'diag'.
+            Only used when rel=True for the radius. Defaults to 'min'.
+            - 'w': Relative to image width
+            - 'h': Relative to image height
+            - 'min': Relative to minimum of width and height
+            - 'max': Relative to maximum of width and height
+            - 'diag': Relative to image diagonal
         color: Color of the circle (default: opt.COLOR).
         t: Thickness of the circle line. Use -1 or cv2.FILLED for filled circle (default: opt.THICKNESS).
         line_type: Type of line for drawing (default: opt.LINE_TYPE).
@@ -247,18 +238,13 @@ def circle(img, x0, y0, r, rel=None, color=None, t=None, line_type=None, fill=No
         >>> img = cv3.circle(img, 80, 80, 15, color='blue', fill=True)
         >>> # Draw a filled circle using thickness parameter
         >>> img = cv3.circle(img, 20, 20, 10, color='green', t=-1)
+        >>> # Draw a circle with relative radius based on image width
+        >>> img = cv3.circle(img, 0.5, 0.5, 0.2, rel=True, r_mode='w', color='yellow')
     """
-    kwargs = {}
-    if t is not None:
-        kwargs['t'] = t
-    if line_type is not None:
-        kwargs['line_type'] = line_type
-    if fill is not None:
-        kwargs['fill'] = fill
-    return _circle(img, x0, y0, r, rel=rel, color=color, copy=copy, **kwargs)
+    return _circle(img, x0, y0, r, rel=rel, r_mode=r_mode, color=color, copy=copy, t=t, line_type=line_type, fill=fill)
 
 
-def point(img, x0, y0, r=None, rel=None, color=None, copy=False):
+def point(img, x0, y0, r=None, rel=None, r_mode='min', color=None, copy=False):
     """Draw a point (filled circle) on an image.
 
     Args:
@@ -267,6 +253,13 @@ def point(img, x0, y0, r=None, rel=None, color=None, copy=False):
         y0 (int or float): Y-coordinate of the point center.
         r (int or float, optional): Radius of the point. Defaults to opt.PT_RADIUS.
         rel (bool, optional): Whether to use relative coordinates. Defaults to None.
+        r_mode (str, optional): Mode for relative radius calculation. One of 'w', 'h', 'min', 'max', 'diag'.
+            Only used when rel=True for the radius. Defaults to 'min'.
+            - 'w': Relative to image width
+            - 'h': Relative to image height
+            - 'min': Relative to minimum of width and height
+            - 'max': Relative to maximum of width and height
+            - 'diag': Relative to image diagonal
         color: Color of the point (default: opt.COLOR).
         copy (bool): Whether to copy the image before drawing (default: False).
 
@@ -287,10 +280,10 @@ def point(img, x0, y0, r=None, rel=None, color=None, copy=False):
         >>> img = cv3.point(img, 50, 50, color='red')
         >>> # Draw a point with custom radius
         >>> img = cv3.point(img, 80, 80, r=5, color='blue')
+        >>> # Draw a point with relative radius based on image width
+        >>> img = cv3.point(img, 0.5, 0.5, r=0.1, rel=True, r_mode='w', color='green')
     """
-    if r is None:
-        r = opt.PT_RADIUS
-    return _circle(img, x0, y0, r, t=-1, rel=rel, color=color, copy=copy)
+    return _point(img, x0, y0, r=r, rel=rel, r_mode=r_mode, color=color, copy=copy)
 
 
 def line(img, x0, y0, x1, y1, rel=None, color=None, t=None, line_type=None, copy=False):
@@ -323,12 +316,7 @@ def line(img, x0, y0, x1, y1, rel=None, color=None, t=None, line_type=None, copy
         >>> # Draw a line using relative coordinates
         >>> img = cv3.line(img, 0.2, 0.2, 0.8, 0.8, rel=True, color='blue')
     """
-    kwargs = {}
-    if t is not None:
-        kwargs['t'] = t
-    if line_type is not None:
-        kwargs['line_type'] = line_type
-    return _line(img, x0, y0, x1, y1, rel=rel, color=color, copy=copy, **kwargs)
+    return _line(img, x0, y0, x1, y1, rel=rel, color=color, copy=copy, t=t, line_type=line_type)
 
 
 def hline(img, y, rel=None, color=None, t=None, line_type=None, copy=False):
@@ -358,12 +346,7 @@ def hline(img, y, rel=None, color=None, t=None, line_type=None, copy=False):
         >>> # Draw a horizontal line using relative coordinates
         >>> img = cv3.hline(img, 0.75, rel=True, color='blue')
     """
-    kwargs = {}
-    if t is not None:
-        kwargs['t'] = t
-    if line_type is not None:
-        kwargs['line_type'] = line_type
-    return _hline(img, y, rel=rel, color=color, copy=copy, **kwargs)
+    return _hline(img, y, rel=rel, color=color, copy=copy, t=t, line_type=line_type)
 
 
 def vline(img, x, rel=None, color=None, t=None, line_type=None, copy=False):
@@ -393,12 +376,7 @@ def vline(img, x, rel=None, color=None, t=None, line_type=None, copy=False):
         >>> # Draw a vertical line using relative coordinates
         >>> img = cv3.vline(img, 0.75, rel=True, color='blue')
     """
-    kwargs = {}
-    if t is not None:
-        kwargs['t'] = t
-    if line_type is not None:
-        kwargs['line_type'] = line_type
-    return _vline(img, x, rel=rel, color=color, copy=copy, **kwargs)
+    return _vline(img, x, rel=rel, color=color, copy=copy, t=t, line_type=line_type)
 
 
 def text(img, text_str, x=0.5, y=0.5, font=None, scale=None, flip=False, rel=None, color=None, t=None, line_type=None, copy=False):
@@ -444,34 +422,18 @@ def text(img, text_str, x=0.5, y=0.5, font=None, scale=None, flip=False, rel=Non
         >>> # Draw flipped text
         >>> img = cv3.text(img, 'Flipped', x=50, y=80, flip=True, color='green')
     """
-    kwargs = {}
-    if t is not None:
-        kwargs['t'] = t
-    if line_type is not None:
-        kwargs['line_type'] = line_type
-    if scale is not None:
-        kwargs['scale'] = scale
-    if font is not None:
-        kwargs['font'] = font
-    if flip:
-        kwargs['flip'] = flip
-    return _text(img, text_str, x=x, y=y, rel=rel, color=color, copy=copy, **kwargs)
+    return _text(img, text_str, x=x, y=y, rel=rel, color=color, copy=copy, t=t, line_type=line_type, scale=scale, font=font, flip=flip)
 
 
-def rectangles(img: np.array, rects: List[List], color=None, t=None, line_type=None, fill=None, copy=False) -> np.array:
-    """Draw multiple rectangles on an image.
+def rectangles(img: np.array, rects: List[List], *args, **kwargs) -> np.array:
+    """Draw multiple rectangles on an image. See :func:`rectangle` for more details.
 
     Args:
         img (numpy.ndarray): Input image to draw on.
         rects (List[List]): List of rectangles, where each rectangle is a list
             of parameters to pass to the rectangle function.
-        color: Color of the rectangles (default: opt.COLOR).
-        t: Thickness of the rectangle lines (default: opt.THICKNESS).
-        line_type: Type of line for drawing (default: opt.LINE_TYPE).
-        fill (bool, optional): Whether to fill the rectangles. If True, draws filled rectangles
-            regardless of thickness. If False, draws outlined rectangles. If None, uses
-            the thickness parameter to determine fill behavior. Defaults to None.
-        copy (bool): Whether to copy the image before drawing (default: False).
+        *args: Additional arguments to pass to the :func:`rectangle` function.
+        **kwargs: Additional keyword arguments to pass to the :func:`rectangle` function.
 
     Returns:
         numpy.ndarray: Image with all rectangles drawn on it.
@@ -479,6 +441,14 @@ def rectangles(img: np.array, rects: List[List], color=None, t=None, line_type=N
     Note:
         Each rectangle in the rects list should contain the parameters needed
         for the rectangle function (x0, y0, x1, y1, etc.).
+
+        The coordinate modes are:
+        - 'xyxy': Two corner points (x0, y0) and (x1, y1)
+        - 'xywh': Top-left corner (x0, y0) and width (x1), height (y1)
+        - 'ccwh': Center point (x0, y0) and width (x1), height (y1)
+
+        Relative coordinates are in the range [0, 1] where 0 is the top/left
+        and 1 is the bottom/right of the image.
 
         When fill=True, the rectangles are filled regardless of the thickness value.
         When fill=False, the rectangles are outlined with the specified thickness.
@@ -501,30 +471,20 @@ def rectangles(img: np.array, rects: List[List], color=None, t=None, line_type=N
         ... ]
         >>> img = cv3.rectangles(img, filled_rectangles, color='blue', fill=True)
     """
-    kwargs = {}
-    if color is not None:
-        kwargs['color'] = color
-    if t is not None:
-        kwargs['t'] = t
-    if line_type is not None:
-        kwargs['line_type'] = line_type
-    if fill is not None:
-        kwargs['fill'] = fill
-    if copy:
-        kwargs['copy'] = copy
-    return _rectangles(img, rects, **kwargs)
+    for rect in rects:
+        img = rectangle(img, *rect, *args, **kwargs)
+    return img
 
 
-def points(img: np.array, pts: List[List], color=None, r=None, copy=False) -> np.array:
-    """Draw multiple points on an image.
+def points(img: np.array, pts: List[List], *args, **kwargs) -> np.array:
+    """Draw multiple points on an image. See :func:`point` for more details.
 
     Args:
         img (numpy.ndarray): Input image to draw on.
         pts (List[List]): List of points, where each point is a list
             of parameters to pass to the point function.
-        color: Color of the points (default: opt.COLOR).
-        r (int or float, optional): Radius of the points. Defaults to opt.PT_RADIUS.
-        copy (bool): Whether to copy the image before drawing (default: False).
+        *args: Additional arguments to pass to the :func:`point` function.
+        **kwargs: Additional keyword arguments to pass to the :func:`point` function.
 
     Returns:
         numpy.ndarray: Image with all points drawn on it.
@@ -532,6 +492,9 @@ def points(img: np.array, pts: List[List], color=None, r=None, copy=False) -> np
     Note:
         Each point in the pts list should contain the parameters needed
         for the point function (x0, y0, r, etc.).
+
+        Relative coordinates are in the range [0, 1] where 0 is the top/left
+        and 1 is the bottom/right of the image.
 
     Example:
         >>> import cv3
@@ -543,19 +506,17 @@ def points(img: np.array, pts: List[List], color=None, r=None, copy=False) -> np
         ...     [70, 70]
         ... ]
         >>> img = cv3.points(img, points, color='red')
+        >>> # Draw multiple points with relative radius based on image width
+        >>> points = [
+        ...     [0.2, 0.2],
+        ...     [0.5, 0.5],
+        ...     [0.8, 0.8]
+        ... ]
+        >>> img = cv3.points(img, points, r=0.1, rel=True, r_mode='w', color='blue')
     """
-    kwargs = {}
-    if color is not None:
-        kwargs['color'] = color
-    if r is not None:
-        kwargs['r'] = r
-    if copy:
-        kwargs['copy'] = copy
-    return _points(img, pts, **kwargs)
-
-
-# Alias for text function to match OpenCV naming convention
-putText = text
+    for pt in pts:
+        img = _point(img, *pt, *args, **kwargs)
+    return img
 
 
 def arrow(img, x0, y0, x1, y1, rel=None, color=None, t=None, line_type=None, tip_length=None, copy=False):
@@ -595,14 +556,7 @@ def arrow(img, x0, y0, x1, y1, rel=None, color=None, t=None, line_type=None, tip
     if not opt.EXPERIMENTAL:
         raise RuntimeError("This function is experimental. Use opt.set_exp() to enable it.")
     
-    kwargs = {}
-    if t is not None:
-        kwargs['t'] = t
-    if line_type is not None:
-        kwargs['line_type'] = line_type
-    if tip_length is not None:
-        kwargs['tip_length'] = tip_length
-    return _arrowed_line(img, x0, y0, x1, y1, rel=rel, color=color, copy=copy, **kwargs)
+    return _arrowed_line(img, x0, y0, x1, y1, rel=rel, color=color, copy=copy, t=t, line_type=line_type, tip_length=tip_length)
 
 
 def ellipse(img, x, y, axes_x, axes_y, angle=0, start_angle=0, end_angle=360, rel=None, color=None, t=None,
@@ -657,15 +611,8 @@ def ellipse(img, x, y, axes_x, axes_y, angle=0, start_angle=0, end_angle=360, re
     if not opt.EXPERIMENTAL:
         raise RuntimeError("This function is experimental. Use opt.set_exp() to enable it.")
     
-    kwargs = {}
-    if t is not None:
-        kwargs['t'] = t
-    if line_type is not None:
-        kwargs['line_type'] = line_type
-    if fill is not None:
-        kwargs['fill'] = fill
     return _ellipse(img, x, y, axes_x, axes_y, angle=angle, start_angle=start_angle, end_angle=end_angle,
-                    rel=rel, color=color, copy=copy, **kwargs)
+                    rel=rel, color=color, copy=copy, t=t, line_type=line_type, fill=fill)
 
 
 def marker(img, x, y, marker_type=None, marker_size=None, rel=None, color=None, t=None, line_type=None, copy=False):
@@ -705,12 +652,7 @@ def marker(img, x, y, marker_type=None, marker_size=None, rel=None, color=None, 
     if not opt.EXPERIMENTAL:
         raise RuntimeError("This function is experimental. Use opt.set_exp() to enable it.")
     
-    kwargs = {}
-    if t is not None:
-        kwargs['t'] = t
-    if line_type is not None:
-        kwargs['line_type'] = line_type
-    return _marker(img, x, y, marker_type=marker_type, marker_size=marker_size, rel=rel, color=color, copy=copy, **kwargs)
+    return _marker(img, x, y, marker_type=marker_type, marker_size=marker_size, rel=rel, color=color, copy=copy, t=t, line_type=line_type)
 
 
 def getTextSize(text, font=None, scale=None, t=None):
@@ -743,3 +685,16 @@ def getTextSize(text, font=None, scale=None, t=None):
         raise RuntimeError("This function is experimental. Use opt.set_exp() to enable it.")
     
     return _get_text_size(text, font=font, scale=scale, t=t)
+
+
+# Aliases
+putText = text
+"""Alias for :func:`text`."""
+rect = rectangle
+"""Alias for :func:`rectangles`."""
+rects = rectangles
+"""Alias for :func:`rectangles`."""
+poly = polylines
+"""Alias for :func:`polylines`."""
+polygon = polylines
+"""Alias for :func:`polylines`."""

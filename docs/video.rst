@@ -19,6 +19,7 @@ with automatic color space conversion and enhanced error handling.
    :toctree: generated/
    :template: class.rst
    
+   VideoInterface
    VideoCapture
    VideoWriter
-   VideoInterface
+   VideoReader

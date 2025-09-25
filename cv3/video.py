@@ -23,7 +23,7 @@ from typing import Union
 
 from . import opt
 from .color_spaces import rgb
-from ._utils import typeit
+from ._private._utils import typeit
 
 __all__ = [
     'VideoCapture',
@@ -62,7 +62,15 @@ class VideoInterface:
         return self.isOpened()
 
     def release(self):
-        """Release the video stream and free associated resources."""
+        """Release the video stream and free associated resources.
+        
+        Note:
+            If the stream has not been started, a warning will be issued.
+        """
+        if self.stream is None:
+            warnings.warn("Stream not started")
+            return
+
         self.stream.release()
 
     @property
@@ -86,6 +94,7 @@ class VideoInterface:
         self.release()
 
     close = release
+    """Alias for :meth:`release`."""
 
 
 class VideoCapture(VideoInterface):
@@ -218,8 +227,9 @@ class VideoCapture(VideoInterface):
         return frame
 
     imread = read
+    """Alias for :meth:`read`."""
     seek = rewind
-    """Alias for read method."""
+    """Alias for :meth:`rewind`."""
 
 
 class VideoWriter(VideoInterface):
@@ -285,17 +295,6 @@ class VideoWriter(VideoInterface):
             return False
         return super().isOpened()
 
-    def release(self):
-        """Release the video writer stream and free associated resources.
-        
-        Note:
-            If the stream has not been started, a warning will be issued.
-        """
-        if self.stream is None:
-            warnings.warn("Stream not started")
-            return
-        super().release()
-
     def write(self, frame: np.ndarray):
         """Write a frame to the video file.
         
@@ -318,7 +317,7 @@ class VideoWriter(VideoInterface):
         self.stream.write(frame)
 
     imwrite = write
-    """Alias for write method."""
+    """Alias for :meth:`write`."""
 
 
 def Video(path, mode='r', **kwds):
@@ -359,4 +358,4 @@ def Video(path, mode='r', **kwds):
 
 
 VideoReader = VideoCapture
-"""Alias for VideoCapture class."""
+"""Alias for :class:`VideoCapture`."""

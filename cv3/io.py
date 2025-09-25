@@ -25,7 +25,8 @@ import numpy as np
 
 from .color_spaces import rgb, rgba
 from . import opt
-from ._utils import typeit, type_decorator
+from ._private._utils import typeit, type_decorator
+from ._private._io import _imread_flag_match, _is_ascii
 
 __all__ = [
     'imread',
@@ -39,34 +40,6 @@ __all__ = [
     'destroy_window', 'destroyWindow'
 ]
 
-def _imread_flag_match(flag):
-    """Convert string flag to OpenCV flag constant.
-    
-    Args:
-        flag (str): String flag name. Can be one of: 'color', 'gray', 'alpha', 'unchanged'.
-        
-    Returns:
-        int: OpenCV flag constant.
-        
-    Raises:
-        AssertionError: If flag is not one of the valid options.
-        
-    Note:
-        The 'alpha' flag is deprecated and will be converted to 'unchanged' with a warning.
-    """
-    assert flag in ('color', 'gray', 'alpha', 'unchanged')
-    if flag == 'color':
-        flag = cv2.IMREAD_COLOR
-    elif flag == 'gray':
-        flag = cv2.IMREAD_GRAYSCALE
-    elif flag == 'unchanged':
-        flag = cv2.IMREAD_UNCHANGED
-    elif flag == 'alpha':
-        warnings.warn('Flag name "alpha" deprecated. Please use "unchanged"')
-        flag = cv2.IMREAD_UNCHANGED
-    return flag
-
-
 
 def is_ascii(s):
     """Check if a string contains only ASCII characters.
@@ -77,7 +50,7 @@ def is_ascii(s):
     Returns:
         bool: True if all characters in the string are ASCII, False otherwise.
     """
-    return all(ord(c) < 128 for c in s)
+    return _is_ascii(s)
 
 def imdecode(buf, flag):
     """Decode an image from a buffer.
@@ -145,7 +118,7 @@ def imread(img_path, flag=cv2.IMREAD_COLOR):
         flag = _imread_flag_match(flag)
     img = cv2.imread(img_path, flag)
     if img is None:
-        if not is_ascii(img_path):
+        if not _is_ascii(img_path):
             img = cv2.imdecode(np.fromfile(img_path, dtype=np.uint8), flag)
         if img is None:
             raise OSError('File was not read: {}'.format(img_path))
@@ -514,12 +487,52 @@ class Windows:
         """
         self.close()
 
+def destroy_windows():
+    """Destroy all windows.
+    
+    This function destroys all windows that were created with imshow or Window.
+    
+    Note:
+        This is a wrapper around cv2.destroyAllWindows().
+        
+    Example:
+        >>> import cv3
+        >>> # Create and display an image
+        >>> import numpy as np
+        >>> img = np.zeros((100, 100, 3), dtype=np.uint8)
+        >>> cv3.imshow('Window1', img)
+        >>> cv3.imshow('Window2', img)
+        >>> # Destroy all windows
+        >>> cv3.destroy_windows()
+    """
+    cv2.destroyAllWindows()
+
+
+def destroy_window(winname: str):
+    """Destroy a specific window.
+    
+    Args:
+        winname (str): Name of the window to destroy.
+        
+    Note:
+        This is a wrapper around cv2.destroyWindow().
+        
+    Example:
+        >>> import cv3
+        >>> # Create and display an image
+        >>> import numpy as np
+        >>> img = np.zeros((100, 100, 3), dtype=np.uint8)
+        >>> cv3.imshow('My Window', img)
+        >>> # Destroy the specific window
+        >>> cv3.destroy_window('My Window')
+    """
+    cv2.destroyWindow(winname)
+
+# Aliases
 waitKey = wait_key
-"""Alias for wait_key function."""
-
-destroy_windows = destroyAllWindows = cv2.destroyAllWindows
-"""Function to destroy all windows."""
-
-destroy_window = destroyWindow = cv2.destroyWindow
-"""Function to destroy a specific window."""
+"""Alias for :func:`wait_key`."""
+destroyAllWindows = destroy_windows
+"""Alias for :func:`destroy_windows`."""
+destroyWindow = destroy_window
+"""Alias for :func:`destroy_window`."""
 
