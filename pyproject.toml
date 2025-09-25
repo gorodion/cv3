@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cv3"
+version = "1.3.2"
+description = "Pythonic cv2"
+readme = "README.md"
+license = {text = "Apache 2.0"}
+authors = [
+    {name = "gorodion", email = "domonion@list.ru"}
+]
+requires-python = ">=3.6"
+dependencies = [
+    "numpy>=1.19.5",
+    "opencv-python>=4.2.0.34"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Image Processing",
+]
+
+[project.urls]
+Homepage = "https://github.com/gorodion/cv3"
+Documentation = "https://cv3.readthedocs.io/en/latest/"
+Repository = "https://github.com/gorodion/cv3"
+"Bug Tracker" = "https://github.com/gorodion/cv3/issues"
+
+[tool.setuptools]
+packages = ["cv3", "cv3._private"]
