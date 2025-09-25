@@ -1,4 +1,20 @@
 # Changelog
+## [1.3.2] - 2025-09-26
+
+### Added
+* copy parameter in crop function
+* aliases rect (for rectangle) and poly, polygon (for polylines)
+* pyproject.toml for modern Python packaging
+
+### Changed
+* updated documentation: removed contradictions; explicitly highlighted aliases
+* file reorganization: _private module structure
+* documentation for rectangles, points functions
+* error handling for fill and t parameters in draw module
+
+### Fixed
+* parameter passing in rectangles, points functions
+
 ## [1.3.1] - 2025-09-07
 
 ### Added
